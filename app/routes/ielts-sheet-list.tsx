@@ -34,7 +34,7 @@ export default function IeltsSheetList() {
             <CardHeader>
               <CardTitle>Cam 12 - test 1</CardTitle>
               <CardDescription>Mock</CardDescription>
-              {/* <CardAction>Detail</CardAction> */}
+              <CardAction>6.0</CardAction>
             </CardHeader>
             <CardContent>
               <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSfOZrqJle8FGRpv-YQP-dEMXkK1NIqXDiAog&s" />
@@ -49,7 +49,7 @@ export default function IeltsSheetList() {
             <CardHeader>
               <CardTitle>Cam 12 - test 1</CardTitle>
               <CardDescription>Exercise</CardDescription>
-              {/* <CardAction>Detail</CardAction> */}
+              <CardAction>7.0</CardAction>
             </CardHeader>
             <CardContent>
               <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSfOZrqJle8FGRpv-YQP-dEMXkK1NIqXDiAog&s" />

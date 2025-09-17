@@ -1,5 +1,13 @@
 export type ieltsAnswerSheet = {
     version: number,
-    answer: (string | number)[],
-    totalPoint: number,
+    answers: Answer[],
+    totalScore: number,
+    createdAt: Date,
+    updatedAt: Date,
+    type: "mock" | "exercise",
+}
+
+type Answer = {
+    response: string | number,
+    isCorrect: boolean,
 }
