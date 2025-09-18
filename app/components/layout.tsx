@@ -7,12 +7,11 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "./ui/breadcrumb";
-import { Outlet, useNavigate } from "react-router";
+import { Outlet } from "react-router";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Switch } from "./ui/switch";
 import type { Route } from "../+types/root";
-import useStore from "~/lib/store";
-import { toast } from "sonner";
+import useGuard from "hooks/useGuard";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -22,25 +21,7 @@ export function meta({}: Route.MetaArgs) {
 }
 
 const layout = () => {
-  const { gapi } = useStore();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    console.log(gapi?.client);
-    if (!gapi) return;
-    if (!gapi.client) {
-      navigate("/");
-      toast.error("Timeout! Please login.");
-      return
-    }
-    const token = gapi.client.getToken();
-    console.log("token:", token);
-    if (!token) {
-      navigate("/");
-      toast.error("Timeout! Please login.");
-      return
-    }
-  }, [gapi]);
+  useGuard()
 
   return (
     <>

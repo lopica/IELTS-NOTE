@@ -1,10 +1,10 @@
-import { use, useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
 import useStore from "~/lib/store";
 
 export default function useGoogle() {
-  const { tokenClient, setTokenClient, gapi, setGapi, google, setGoogle } =
+  const { setTokenClient, gapi, setGapi, google, setGoogle } =
     useStore();
     const navigate = useNavigate();
 

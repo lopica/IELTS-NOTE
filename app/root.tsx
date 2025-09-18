@@ -6,22 +6,12 @@ import {
   Scripts,
   ScrollRestoration,
 } from "react-router";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "~/components/ui/breadcrumb";
 
 import type { Route } from "./+types/root";
 import "./app.css";
-import { use } from "react";
 import useGoogle from "hooks/useGoogle";
 import { Toaster } from "./components/ui/sonner";
-// import { gisLoaded } from "./lib/GIS";
-// import { gapiLoaded } from "./lib/GAPI";
+import useWatch from "hooks/useWatch";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -56,6 +46,7 @@ export const links: Route.LinksFunction = () => [
 
 export function Layout({ children }: { children: React.ReactNode }) {
   useGoogle();
+  useWatch()
   return (
     <html lang="en">
       <head>

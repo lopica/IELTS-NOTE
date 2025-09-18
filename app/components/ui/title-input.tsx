@@ -1,6 +1,14 @@
 import React, { useRef } from "react";
+import type { Path, UseFormRegister } from "react-hook-form";
+import type { createFormData } from "~/routes/ielts-sheet-create";
 
-const TitleInput = () => {
+type InputProps = {
+  label: Path<createFormData>
+  register: UseFormRegister<createFormData>
+  required?: boolean
+}
+
+const TitleInput = ({ label, register, required = false }: InputProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleInput = () => {
@@ -12,6 +20,7 @@ const TitleInput = () => {
   
   return (
     <input
+      {...register(label, { required })}
       type="text"
       name="title"
       placeholder="title"

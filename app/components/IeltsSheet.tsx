@@ -1,15 +1,27 @@
 import React from "react";
 import { InputOTP } from "./ui/input-otp";
+import type { UseFormRegister } from "react-hook-form";
+import type { createFormData } from "~/routes/ielts-sheet-create";
 
 interface IeltsSheetProps {
-    numberInputs: { [key: string]: string };
-    handleNumberKeyDown: (fieldId: string) => (e: React.KeyboardEvent<HTMLInputElement>) => void;
-    selectedMarkers: { [key: number]: string | null };
-    handleMarkerChange: (questionNum: number, value: string) => void;
-    listeningTotal: string;
+  numberInputs: { [key: string]: string };
+  handleNumberKeyDown: (
+    fieldId: string
+  ) => (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  selectedMarkers: { [key: number]: string | null };
+  handleMarkerChange: (questionNum: number, value: string) => void;
+  listeningTotal: string;
+  register: UseFormRegister<createFormData>;
 }
 
-const IeltsSheet = ({numberInputs, handleNumberKeyDown, selectedMarkers, handleMarkerChange, listeningTotal} : IeltsSheetProps) => {
+const IeltsSheet = ({
+  numberInputs,
+  handleNumberKeyDown,
+  selectedMarkers,
+  handleMarkerChange,
+  listeningTotal,
+  register,
+}: IeltsSheetProps) => {
   return (
     <>
       <div className="flex justify-around items-center mb-4 sm:mb-6">
@@ -61,7 +73,7 @@ const IeltsSheet = ({numberInputs, handleNumberKeyDown, selectedMarkers, handleM
               </div>
               <div className="flex space-x-1">
                 {Array.from({ length: 6 }).map((_, i) => (
-                  <InputOTP 
+                  <InputOTP
                     key={i}
                     value={numberInputs[`candidate-${i}`] || ""}
                     onKeyDown={handleNumberKeyDown(`candidate-${i}`)}
@@ -195,6 +207,7 @@ const IeltsSheet = ({numberInputs, handleNumberKeyDown, selectedMarkers, handleM
                 <input
                   type="text"
                   className="col-span-8 border-r border-gray-300 px-1 sm:px-2 text-xs focus:outline-none bg-white"
+                  {...register(`answers.${i}`, { required: true })}
                 />
                 <div className="col-span-3 text-center text-xs flex items-center justify-center space-x-1 px-1">
                   <label className="flex items-center cursor-pointer">
@@ -257,6 +270,7 @@ const IeltsSheet = ({numberInputs, handleNumberKeyDown, selectedMarkers, handleM
                 <input
                   type="text"
                   className="col-span-8 border-r border-gray-300 px-1 sm:px-2 text-xs focus:outline-none bg-white"
+                  {...register(`answers.${i}`, { required: true })}
                 />
                 <div className="col-span-3 text-center text-xs flex items-center justify-center space-x-1 px-1">
                   <label className="flex items-center cursor-pointer">

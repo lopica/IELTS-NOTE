@@ -10,11 +10,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
+import { Controller, useForm, type SubmitHandler } from "react-hook-form";
 import IeltsSheet from "~/components/IeltsSheet";
 import useIeltsSheet from "hooks/useIeltsSheet";
 import TitleInput from "~/components/ui/title-input";
+import useCreateSheet from "hooks/useCreateSheet";
+import type { ieltsAnswerSheets } from "types/ielts-answer-sheets";
+import type { ieltsAnswerSheet } from "types/ielts-answer-sheet";
 
-
+export type createFormData = ieltsAnswerSheet & Pick<ieltsAnswerSheets, "title">;
 
 const IeltsSheetCreate = () => {
   const {
@@ -25,73 +29,49 @@ const IeltsSheetCreate = () => {
     listeningTotal,
   } = useIeltsSheet();
 
-    async function checkIfSheetExists(fileName: string) {
-    try {
-      const response = await gapi.client.drive.files.list({
-        q: `name='${fileName}' and mimeType='application/vnd.google-apps.spreadsheet' and trashed=false`,
-        fields: "files(id, name)",
-      });
+  // const { handleCreate } = useCreateSheet();
 
-      const files = response.result.files;
-      if (files && files.length > 0) {
-        return files[0]; // Hoặc trả về true
-      } else {
-        return null;
-      }
-    } catch (err) {
-      console.error("Error checking file:", err);
-      return null;
-    }
-  }
+  const {
+    register,
+    handleSubmit,
+    control,
+    watch,
+    formState: { errors },
+  } = useForm<createFormData>();
 
-  const handleCreate = async () => {
-    const fileName = "test";
-        const existingFile = await checkIfSheetExists(fileName);
+  const sheetType = watch("type") 
 
-        if (existingFile) {
-          console.log("File already exists:", existingFile.id);
-          // Optional: mở file, ghi thêm, v.v.
-        } else {
-          try {
-            gapi.client.sheets.spreadsheets
-              .create({
-                properties: {
-                  title: "test",
-                },
-              })
-              .then((response: any) => {
-                // if (callback) callback(response);
-                console.log("Spreadsheet ID: " + response.result.spreadsheetId);
-              });
-          } catch (err: any) {
-            console.log(err.message)
-          }
-        }
-  };
+  const onSubmit: SubmitHandler<createFormData> = (data) =>
+    console.log(data);
 
   return (
-    <div className="mt-4">
-      {/* Header with logos */}
+    <form className="mt-4" onSubmit={handleSubmit(onSubmit)}>
       <div className="flex justify-center items-center">
-        <TitleInput />
+        <TitleInput label="title" register={register} required />
       </div>
 
       <div className="flex flex-col justify-end items-end mr-40 my-4">
         <span>Version 1</span>
       </div>
-      <div className="flex flex-col justify-center items-center gap-4 mb-4 text-3xl">
-        <Select>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Select a fruit" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectItem value="apple">Mock</SelectItem>
-              <SelectItem value="banana">Exercise</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-        <Timer />
+      <div className="flex flex-col justify-center items-center gap-4 mb-8 text-3xl">
+        <Controller
+          name="type"
+          control={control}
+          render={({ field }) => (
+            <Select onValueChange={field.onChange} value={field.value}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Select sheet type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="mock">Mock</SelectItem>
+                  <SelectItem value="exercise">Exercise</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          )}
+        />
+        {sheetType === "mock" && <Timer />}
       </div>
 
       <div className="max-w-4xl mx-auto p-4 sm:p-6 bg-white">
@@ -101,12 +81,13 @@ const IeltsSheetCreate = () => {
           selectedMarkers={selectedMarkers}
           handleMarkerChange={handleMarkerChange}
           listeningTotal={listeningTotal}
+          register={register}
         />
         <div className="mt-4 flex justify-end">
-          <Button onClick={handleCreate}>Save</Button>
+          <Button>Save</Button>
         </div>
       </div>
-    </div>
+    </form>
   );
 };
 

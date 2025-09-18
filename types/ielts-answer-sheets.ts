@@ -1,6 +1,6 @@
 import type { ieltsAnswerSheet } from "./ielts-answer-sheet"
 
-export type ieltsAnswerSheetResponse = {
+export type ieltsAnswerSheets = {
     title: string,
     createdAt: Date,
     updatedAt: Date,
@@ -9,3 +9,4 @@ export type ieltsAnswerSheetResponse = {
     asset: string,
     items: ieltsAnswerSheet[],
 }
+

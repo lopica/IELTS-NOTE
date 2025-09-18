@@ -16,7 +16,7 @@ export const Timer = () => {
   let remainingSecond = formatTime(seconds % 60);
 
   return (
-    <div className="flex justify-center items-center gap-4 mb-4 text-3xl">
+    <div className="flex justify-center items-center gap-4 text-3xl">
       <span>{remainingMinute}</span>
       <span>:</span>
       <span>{remainingSecond}</span>
