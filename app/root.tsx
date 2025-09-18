@@ -17,6 +17,11 @@ import {
 
 import type { Route } from "./+types/root";
 import "./app.css";
+import { use } from "react";
+import useGoogle from "hooks/useGoogle";
+import { Toaster } from "./components/ui/sonner";
+// import { gisLoaded } from "./lib/GIS";
+// import { gapiLoaded } from "./lib/GAPI";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -46,10 +51,11 @@ export const links: Route.LinksFunction = () => [
     sizes: "16x16",
     href: "../public/favicon-16x16.png",
   },
-  { rel: "manifest", href: "../public/site.webmanifest"}
+  { rel: "manifest", href: "../public/site.webmanifest" },
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
+  useGoogle();
   return (
     <html lang="en">
       <head>
@@ -58,8 +64,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body>
+      <body className="bg-slate-100">
         {children}
+        <Toaster />
         <ScrollRestoration />
         <Scripts />
       </body>
@@ -68,24 +75,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  return <div className="mt-20 mx-20 px-8">
-    <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/">Home</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/components">Components</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>Breadcrumb</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
-    <Outlet />
-  </div>;
+  return <Outlet />;
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {

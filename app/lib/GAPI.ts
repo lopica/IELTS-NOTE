@@ -1,0 +1,2 @@
+var gapi: any;
+

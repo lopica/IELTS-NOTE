@@ -1,0 +1,76 @@
+import React, { useEffect } from "react";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "./ui/breadcrumb";
+import { Outlet, useNavigate } from "react-router";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Switch } from "./ui/switch";
+import type { Route } from "../+types/root";
+import useStore from "~/lib/store";
+import { toast } from "sonner";
+
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: "IELTS NOTES" },
+    { name: "description", content: "Webapp to store ielts mock test" },
+  ];
+}
+
+const layout = () => {
+  const { gapi } = useStore();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    console.log(gapi?.client);
+    if (!gapi) return;
+    if (!gapi.client) {
+      navigate("/");
+      toast.error("Timeout! Please login.");
+      return
+    }
+    const token = gapi.client.getToken();
+    console.log("token:", token);
+    if (!token) {
+      navigate("/");
+      toast.error("Timeout! Please login.");
+      return
+    }
+  }, [gapi]);
+
+  return (
+    <>
+      <header className="px-12 py-4 flex justify-end items-center gap-8 bg-white">
+        <Switch />
+        <Avatar>
+          <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+          <AvatarFallback>CN</AvatarFallback>
+        </Avatar>
+      </header>
+      <div className="pt-20 px-28">
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/">Home</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/components">Components</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Breadcrumb</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+        <Outlet />
+      </div>
+    </>
+  );
+};
+
+export default layout;
