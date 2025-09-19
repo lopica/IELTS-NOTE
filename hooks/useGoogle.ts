@@ -13,13 +13,13 @@ export default function useGoogle() {
 
     script.onload = () => {
       console.log("gapi script loaded");
-    };
-
-    script.onerror = () => {
-      console.error("Failed to load gapi script");
       getGapi(() => setIsGapiLoaded(true));
     };
-
+    
+    script.onerror = () => {
+      console.error("Failed to load gapi script");
+    };
+    
     document.body.appendChild(script);
 
     return () => {
@@ -37,11 +37,11 @@ export default function useGoogle() {
       console.log("gsi script loaded");
       setIsGoogleLoaded(true);
     };
-
+    
     script.onerror = () => {
       console.error("Failed to load gsi script");
     };
-
+    
     document.body.appendChild(script);
 
     return () => {

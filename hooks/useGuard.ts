@@ -1,5 +1,4 @@
 import { useEffect, useRef } from "react";
-import { set } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router";
 import { toast } from "sonner";
 import { getGapi } from "~/lib/GAPI";
@@ -11,27 +10,23 @@ export default function useGuard() {
   const navigate = useNavigate();
   const gapiRef = useRef<typeof gapi>(null);
 
-    useEffect(() => {
-        if (isGapiLoaded) {
-          gapiRef.current = getGapi();
-        }
-      }, [isGapiLoaded]);
-  
-  
   useEffect(() => {
-    if (!gapiRef.current) return;
+    if (isGapiLoaded) {
+      gapiRef.current = getGapi();
+    }
+  }, [isGapiLoaded]);
+
+  useEffect(() => {
+    if (!isGapiLoaded || gapiRef.current === null) return;
     const token = localStorage.getItem("access_token");
     const expiresIn = localStorage.getItem("expires_in");
-
+    
     const isTokenValid =
-      token &&
-      expiresIn &&
-      Number(JSON.parse(expiresIn)) * 1000 > Date.now();
-
+      token && expiresIn && (Number(JSON.parse(expiresIn)) > Date.now());
     if (isTokenValid) {
       if (!isAuthenticated) setIsAuthenticated(true);
       if (location.pathname === "/") navigate("/list");
-      gapiRef.current.client.setToken({ access_token: token })
+      gapiRef.current.client.setToken({ access_token: token });
     } else {
       localStorage.removeItem("access_token");
       localStorage.removeItem("expires_in");
@@ -41,6 +36,11 @@ export default function useGuard() {
         navigate("/");
       }
     }
-  }, [isAuthenticated, location.pathname, navigate, setIsAuthenticated, isGapiLoaded]);
-
+  }, [
+    isAuthenticated,
+    location.pathname,
+    navigate,
+    setIsAuthenticated,
+    isGapiLoaded,
+  ]);
 }

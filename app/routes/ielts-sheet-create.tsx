@@ -45,7 +45,7 @@ const IeltsSheetCreate = () => {
     console.log(data);
 
   return (
-    <form className="mt-4" onSubmit={handleSubmit(onSubmit)}>
+    <form className="my-4 mb-20" onSubmit={handleSubmit(onSubmit)}>
       <div className="flex justify-center items-center">
         <TitleInput label="title" register={register} required />
       </div>
@@ -83,10 +83,10 @@ const IeltsSheetCreate = () => {
           listeningTotal={listeningTotal}
           register={register}
         />
-        <div className="mt-4 flex justify-end">
+      </div>
+        <div className="mt-4 mr-56 flex justify-end">
           <Button>Save</Button>
         </div>
-      </div>
     </form>
   );
 };

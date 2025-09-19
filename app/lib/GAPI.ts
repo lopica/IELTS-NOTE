@@ -1,15 +1,14 @@
 let gapiInstance: typeof gapi | null = null;
 
-export function getGapi(callback?: () => void): typeof gapi{
+export function getGapi(callback?: () => void): typeof gapi {
   if (!gapiInstance) gapiInstance = window.gapi;
   if (!gapiInstance.client) {
-    gapiInstance.load("client", initializeGapiClient);
+    gapiInstance.load("client", () => initializeGapiClient(callback));
   }
-  if(callback) callback()
   return gapiInstance;
 }
 
-async function initializeGapiClient() {
+async function initializeGapiClient(callback?: () => void) {
   await gapi.client
     .init({
       apiKey: import.meta.env.VITE_API_KEY,
@@ -21,4 +20,6 @@ async function initializeGapiClient() {
     .catch((error: any) => {
       console.error("Error initializing gapi client", error);
     });
+
+  if (callback) callback();
 }
