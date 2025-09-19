@@ -1,9 +1,7 @@
 import { BookOpen, Target, Trophy } from "lucide-react";
-import React from "react";
-import { Link } from "react-router";
 import { Button } from "~/components/ui/button";
-import useStore from "~/lib/store";
 import type { Route } from "../+types/root";
+import useLogin from "hooks/useLogin";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -12,45 +10,8 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-async function listMajors() {
-  let response;
-  try {
-    // Fetch first 10 files
-    response = await gapi.client.sheets.spreadsheets.values.get({
-      spreadsheetId: "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms",
-      range: "Class Data!A2:E",
-    });
-  } catch (err: any) {
-    console.error("Execute error", err.message);
-    return;
-  }
-  const range = response.result;
-  if (!range || !range.values || range.values.length == 0) {
-    console.log("No data found.");
-    return;
-  }
-  // Flatten to string to display
-  const output = range.values.reduce(
-    (str: any, row: any) => `${str}${row[0]}, ${row[4]}\n`,
-    "Name, Major:\n"
-  );
-  console.log(output);
-}
-
 const IeltsNoteLandingPage = () => {
-  const { tokenClient, setTokenClient, gapi, setGapi, google, setGoogle } =
-    useStore();
-
-  function handleAuthClick() {
-    if (gapi.client.getToken() === null) {
-      // Prompt the user to select a Google Account and ask for consent to share their data
-      // when establishing a new session.
-      tokenClient.requestAccessToken({ prompt: "consent" });
-    } else {
-      // Skip display of account chooser and consent dialog for an existing session.
-      tokenClient.requestAccessToken({ prompt: "" });
-    }
-  }
+  const { handleAuthClick } = useLogin();
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 px-4">

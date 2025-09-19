@@ -1,26 +1,9 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router";
-import { toast } from "sonner";
+import { getGapi } from "~/lib/GAPI";
 import useStore from "~/lib/store";
 
 export default function useGoogle() {
-  const { setTokenClient, gapi, setGapi, google, setGoogle } =
-    useStore();
-    const navigate = useNavigate();
-
-  function initializeGapiClient() {
-    gapi.client
-      .init({
-        apiKey: import.meta.env.VITE_API_KEY,
-        discoveryDocs: [
-          "https://sheets.googleapis.com/$discovery/rest?version=v4",
-          "https://www.googleapis.com/discovery/v1/apis/drive/v3/rest",
-        ],
-      })
-      .catch((error: any) => {
-        console.error("Error initializing gapi client", error);
-      });
-  }
+  const { setIsGapiLoaded, setIsGoogleLoaded } = useStore();
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -30,11 +13,11 @@ export default function useGoogle() {
 
     script.onload = () => {
       console.log("gapi script loaded");
-      setGapi(window.gapi);
     };
 
     script.onerror = () => {
       console.error("Failed to load gapi script");
+      getGapi(() => setIsGapiLoaded(true));
     };
 
     document.body.appendChild(script);
@@ -52,7 +35,7 @@ export default function useGoogle() {
 
     script.onload = () => {
       console.log("gsi script loaded");
-      setGoogle(window.google);
+      setIsGoogleLoaded(true);
     };
 
     script.onerror = () => {
@@ -65,31 +48,4 @@ export default function useGoogle() {
       document.body.removeChild(script);
     };
   }, []);
-
-  useEffect(() => {
-    if (gapi) {
-      gapi.load("client", initializeGapiClient);
-    }
-  }, [gapi]);
-
-  useEffect(() => {
-    if (google) {
-      setTokenClient(
-        google.accounts.oauth2.initTokenClient({
-          client_id: import.meta.env.VITE_CLIENT_ID,
-          scope:
-            "https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file",
-          callback: (tokenResponse: any) => {
-            if (tokenResponse.error) {
-              toast.error('Something went wrong, please try again later');
-              return
-            }
-            toast.success('Login successfully')
-            navigate('/list')
-          },
-        })
-      );
-    }
-  }, [google]);
-
 }

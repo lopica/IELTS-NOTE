@@ -11,7 +11,6 @@ import { Outlet } from "react-router";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Switch } from "./ui/switch";
 import type { Route } from "../+types/root";
-import useGuard from "hooks/useGuard";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -21,8 +20,6 @@ export function meta({}: Route.MetaArgs) {
 }
 
 const layout = () => {
-  useGuard()
-
   return (
     <>
       <header className="px-12 py-4 flex justify-end items-center gap-8 bg-white">

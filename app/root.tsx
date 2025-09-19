@@ -12,6 +12,7 @@ import "./app.css";
 import useGoogle from "hooks/useGoogle";
 import { Toaster } from "./components/ui/sonner";
 import useWatch from "hooks/useWatch";
+import useGuard from "hooks/useGuard";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -47,6 +48,8 @@ export const links: Route.LinksFunction = () => [
 export function Layout({ children }: { children: React.ReactNode }) {
   useGoogle();
   useWatch()
+  useGuard()
+
   return (
     <html lang="en">
       <head>
