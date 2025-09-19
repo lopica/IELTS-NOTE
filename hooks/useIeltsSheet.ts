@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
+import type { UseFormSetValue } from "react-hook-form";
 import type { ieltsAnswerSheet } from "types/ielts-answer-sheet";
+import type { createFormData } from "~/routes/ielts-sheet-create";
 
 type mode = "view" | "edit" | "create";
 
 export default function useIeltsSheet(
-  type: ieltsAnswerSheet["type"] = "exercise",
-  mode: mode = "create"
+  // type?: ieltsAnswerSheet["type"] = "exercise",
+  setValue: UseFormSetValue<createFormData>,
+  mode: mode = "create",
 ) {
   const [selectedMarkers, setSelectedMarkers] = useState<{
     [key: number]: string | null;
@@ -19,6 +22,7 @@ export default function useIeltsSheet(
       ...prev,
       [questionNum]: prev[questionNum] === value ? null : value,
     }));
+    setValue(`answers.${questionNum - 1}.isCorrect`, value === "correct");
   };
 
   const handleNumberKeyDown =

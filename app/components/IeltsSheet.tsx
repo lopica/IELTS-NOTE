@@ -1,7 +1,8 @@
 import React from "react";
 import { InputOTP } from "./ui/input-otp";
-import type { UseFormRegister } from "react-hook-form";
+import type { FieldErrors, UseFormRegister } from "react-hook-form";
 import type { createFormData } from "~/routes/ielts-sheet-create";
+import clsx from "clsx";
 
 interface IeltsSheetProps {
   numberInputs: { [key: string]: string };
@@ -10,8 +11,9 @@ interface IeltsSheetProps {
   ) => (e: React.KeyboardEvent<HTMLInputElement>) => void;
   selectedMarkers: { [key: number]: string | null };
   handleMarkerChange: (questionNum: number, value: string) => void;
-  listeningTotal: string;
+  pointTotal: string;
   register: UseFormRegister<createFormData>;
+  errors: FieldErrors<createFormData>;
 }
 
 const IeltsSheet = ({
@@ -19,8 +21,9 @@ const IeltsSheet = ({
   handleNumberKeyDown,
   selectedMarkers,
   handleMarkerChange,
-  listeningTotal,
+  pointTotal,
   register,
+  errors,
 }: IeltsSheetProps) => {
   return (
     <>
@@ -206,8 +209,14 @@ const IeltsSheet = ({
                 </div>
                 <input
                   type="text"
-                  className="col-span-8 border-r border-gray-300 px-1 sm:px-2 text-xs focus:outline-none bg-white"
-                  {...register(`answers.${i}`, { required: true })}
+                  className={clsx(
+                    "col-span-8 border-r border-gray-300 px-1 sm:px-2 text-xs focus:outline-none bg-white border-b-2",
+                    {
+                      "border-b-red-300 focus:border-b-red-500": !!errors.answers?.[i]?.response,
+                      "border-b-transparent": !errors.answers?.[i]?.response,
+                    }
+                  )}
+                  {...register(`answers.${i}.response`, { required: true })}
                 />
                 <div className="col-span-3 text-center text-xs flex items-center justify-center space-x-1 px-1">
                   <label className="flex items-center cursor-pointer">
@@ -269,8 +278,16 @@ const IeltsSheet = ({
                 </div>
                 <input
                   type="text"
-                  className="col-span-8 border-r border-gray-300 px-1 sm:px-2 text-xs focus:outline-none bg-white"
-                  {...register(`answers.${i}`, { required: true })}
+                  className={clsx(
+                    "col-span-8 border-r border-gray-300 px-1 sm:px-2 text-xs focus:outline-none bg-white border-b-2",
+                    {
+                      "border-b-red-300 focus:border-b-red-500": !!errors.answers?.[20 + i]?.response,
+                      "border-b-transparent": !errors.answers?.[20 + i]?.response,
+                    }
+                  )}
+                  {...register(`answers.${i + 20}.response`, {
+                    required: true,
+                  })}
                 />
                 <div className="col-span-3 text-center text-xs flex items-center justify-center space-x-1 px-1">
                   <label className="flex items-center cursor-pointer">
@@ -334,7 +351,7 @@ const IeltsSheet = ({
                   key={i}
                   type="text"
                   maxLength={1}
-                  value={listeningTotal[i] || ""}
+                  value={pointTotal[i] || ""}
                   readOnly
                   tabIndex={-1}
                   className={`w-5 h-6 sm:w-6 sm:h-8 border border-black text-center text-xs focus:outline-none bg-gray-50 pointer-events-none ${

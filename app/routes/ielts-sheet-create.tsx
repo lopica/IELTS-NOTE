@@ -20,24 +20,39 @@ import type { ieltsAnswerSheet } from "types/ielts-answer-sheet";
 
 export type createFormData = ieltsAnswerSheet & Pick<ieltsAnswerSheets, "title">;
 
-const IeltsSheetCreate = () => {
-  const {
-    numberInputs,
-    handleNumberKeyDown,
-    selectedMarkers,
-    handleMarkerChange,
-    listeningTotal,
-  } = useIeltsSheet();
 
+const IeltsSheetCreate = () => {
   // const { handleCreate } = useCreateSheet();
 
   const {
     register,
     handleSubmit,
     control,
+    setValue,
     watch,
     formState: { errors },
-  } = useForm<createFormData>();
+  } = useForm<createFormData>({
+  defaultValues: {
+    title: '',
+    type: 'exercise',
+    version: 1,
+    totalScore: 0,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    answers: Array.from({ length: 40 }).map(() => ({
+      response: '',
+      isCorrect: false,
+    })),
+  }
+});
+
+ const {
+    numberInputs,
+    handleNumberKeyDown,
+    selectedMarkers,
+    handleMarkerChange,
+    listeningTotal,
+  } = useIeltsSheet(setValue);
 
   const sheetType = watch("type") 
 
@@ -47,7 +62,7 @@ const IeltsSheetCreate = () => {
   return (
     <form className="my-4 mb-20" onSubmit={handleSubmit(onSubmit)}>
       <div className="flex justify-center items-center">
-        <TitleInput label="title" register={register} required />
+        <TitleInput label="title" register={register} errors={errors} required />
       </div>
 
       <div className="flex flex-col justify-end items-end mr-40 my-4">
@@ -57,6 +72,7 @@ const IeltsSheetCreate = () => {
         <Controller
           name="type"
           control={control}
+          rules={{ required: "Sheet type is required" }}
           render={({ field }) => (
             <Select onValueChange={field.onChange} value={field.value}>
               <SelectTrigger className="w-[180px]">
@@ -80,8 +96,9 @@ const IeltsSheetCreate = () => {
           handleNumberKeyDown={handleNumberKeyDown}
           selectedMarkers={selectedMarkers}
           handleMarkerChange={handleMarkerChange}
-          listeningTotal={listeningTotal}
+          pointTotal={listeningTotal}
           register={register}
+          errors={errors}
         />
       </div>
         <div className="mt-4 mr-56 flex justify-end">

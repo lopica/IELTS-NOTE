@@ -7,6 +7,7 @@ import {
 
 export default [
   index("routes/ielts-note-landing-page.tsx"),
+  route("test", "routes/test.tsx"),
   layout("./components/layout.tsx", [
     route("list", "routes/ielts-sheet-list.tsx"),
     route("create", "routes/ielts-sheet-create.tsx"),
