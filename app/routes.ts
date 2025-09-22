@@ -10,7 +10,9 @@ export default [
   route("test", "routes/test.tsx"),
   layout("./components/layout.tsx", [
     route("list", "routes/ielts-sheet-list.tsx"),
-    route("create", "routes/ielts-sheet-create.tsx"),
+    layout("./components/create-layout.tsx", [
+      route("create", "routes/ielts-sheet-create.tsx"),
+    ]),
     route("list/:id", "routes/ielts-sheet-detail.tsx"),
   ]),
 ] satisfies RouteConfig;

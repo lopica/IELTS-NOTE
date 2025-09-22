@@ -6,9 +6,7 @@ export const hasSheetWithName = async (spreadsheetId: string, name: string) => {
 
     const sheets = response.result.sheets || [];
 
-    return sheets.some(
-      (sheet) => sheet.properties?.title === name
-    );
+    return sheets.some((sheet) => sheet.properties?.title === name);
   } catch (error) {
     console.error("Error fetching spreadsheet:", error);
     return false;
@@ -52,7 +50,6 @@ export const renameFirstSheet = async (
   }
 };
 
-
 export const createNewSheet = async (
   file: gapi.client.sheets.Spreadsheet,
   title: string
@@ -73,8 +70,19 @@ export const createNewSheet = async (
       },
     });
     return response.result;
-  } catch (err) {
+  } catch (err: any) {
     console.error("Error creating new sheet:", err);
-    throw err;
+    throw err.result.error.message;
   }
+};
+
+export const createNewSpreadsheet = async (fileName: string) => {
+  const response = await gapi.client.sheets.spreadsheets.create({
+    resource: {
+      properties: {
+        title: fileName,
+      },
+    },
+  });
+  return response.result;
 };

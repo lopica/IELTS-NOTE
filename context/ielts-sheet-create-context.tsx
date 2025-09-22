@@ -1,25 +1,16 @@
 import useCreateSheet from "hooks/useCreateSheet";
-import { createContext, use } from "react";
+import { createContext, useContext } from "react";
+import { Outlet } from "react-router";
 
 // Create context with correct type
-const IeltsSheetCreateContext = createContext<ReturnType<typeof useCreateSheet> | null>(null);
+export const IeltsSheetCreateContext = createContext<ReturnType<typeof useCreateSheet> | null>(null);
 
 // Custom hook to consume the context
 export const useIeltsSheetCreateContext = () => {
-  const context = use(IeltsSheetCreateContext);
+  const context = useContext(IeltsSheetCreateContext);
   if (!context) {
     throw new Error("useCreate must be used within an IeltsSheetCreateProvider");
   }
   return context;
 };
 
-// Provider component
-export const IeltsSheetCreateProvider = ({ children }: { children: React.ReactNode }) => {
-  const data = useCreateSheet();
-
-  return (
-    <IeltsSheetCreateContext value={data}>
-      {children}
-    </IeltsSheetCreateContext>
-  );
-};

@@ -5,15 +5,19 @@ import useIeltsSheet from "./useIeltsSheet";
 import { checkIfSheetExists } from "~/lib/drive";
 import {
   createNewSheet,
+  createNewSpreadsheet,
   hasSheetWithName,
-  renameFirstSheet,
 } from "~/lib/spreadsheet";
 import { toast } from "sonner";
+import { useState } from "react";
+import { useNavigate } from "react-router";
 
 export type createFormData = ieltsAnswerSheet &
   Pick<ieltsAnswerSheets, "title">;
 
 export default function useCreateSheet() {
+  const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const {
     register,
     handleSubmit,
@@ -47,36 +51,52 @@ export default function useCreateSheet() {
   const sheetType = watch("type");
 
   const onSubmit: SubmitHandler<createFormData> = async (data) => {
+    if (isSubmitting) {
+      toast.error("Please wait, still creating the sheet...");
+      return;
+    }
+
+    setIsSubmitting(true); 
+    toast.loading("Creating sheet...");
     const fileName = "Ielts Note";
     let existingFile = await checkIfSheetExists(fileName);
 
     if (!existingFile) {
-      const response = await gapi.client.sheets.spreadsheets.create({
-        resource: {
-          properties: {
-            title: fileName,
-          },
-        },
-      });
-      existingFile = response.result;
+      existingFile = await createNewSpreadsheet(fileName);
     }
 
     if (!existingFile || !existingFile.spreadsheetId) {
-      console.error("Failed to create or retrieve the spreadsheet.");
+      setIsSubmitting(false); 
+      toast.dismiss();
+      toast.error("Failed to create or retrieve the spreadsheet.");
       return;
     }
 
-    if (!(await hasSheetWithName(existingFile.spreadsheetId, data.title))) {
-      //create new sheet
-      //if just the first sheet, rename it
-      renameFirstSheet(existingFile, data.title);
-    } else {
-      createNewSheet(existingFile, data.title);
+    if (await hasSheetWithName(existingFile.spreadsheetId, data.title)) {
+      setIsSubmitting(false); 
+      toast.dismiss();
+      toast.error("This title already exists. Please choose a different title.");
+      return;
+    }
+    
+    //create new sheet
+   
+    try {
+      await createNewSheet(existingFile, data.title);
+    } catch (error) {
+      setIsSubmitting(false); 
+      toast.dismiss();
+      toast.error("Failed to create a new sheet with the given title.");
+      return
+
     }
     //write
+    
 
-
+    setIsSubmitting(false); 
+    toast.dismiss();
     toast.success("Sheet created successfully!");
+    navigate(`/list`)
   };
 
   return {
