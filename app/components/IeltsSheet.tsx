@@ -2,7 +2,7 @@ import { InputOTP } from "./ui/input-otp";
 import clsx from "clsx";
 import { useIeltsSheetCreateContext } from "context/ielts-sheet-create-context";
 
-const IeltsSheet = ({mode = "edit"}: {mode: "view" | "edit"}) => {
+const IeltsSheet = ({mode = "edit"}: {mode?: "view" | "edit"}) => {
 
   const {
     numberInputs,

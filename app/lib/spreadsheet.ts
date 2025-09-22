@@ -114,7 +114,11 @@ export const createNewSpreadsheet = async (fileName: string) => {
 };
 
 
-export const writeTitleSheet = async (createFormData: createFormData) => {
+export const writeTitleSheet = async (
+  spreadsheetId: string,
+  sheetName: string,
+  createFormData: createFormData
+) => {
   const ieltsAnswerSheet: ieltsAnswerSheet = {
     type: createFormData.type,
     version: createFormData.version,
@@ -122,31 +126,133 @@ export const writeTitleSheet = async (createFormData: createFormData) => {
     createdAt: createFormData.createdAt,
     updatedAt: createFormData.updatedAt,
     answers: createFormData.answers,
+  };
+
+  // 1. Fetch existing data in the sheet
+  const response = await gapi.client.sheets.spreadsheets.values.get({
+    spreadsheetId,
+    range: sheetName,
+  });
+  const values = response.result.values ?? [];
+
+  // 2. Prepare header row:
+  // 5 fixed headers + 40 numbered columns for answers (e.g. "1", "2", ..., "40")
+  const headers = [
+    "type",
+    "version",
+    "totalScore",
+    "createdAt",
+    "updatedAt",
+    ...Array.from({ length: 40 }, (_, i) => `${i + 1}`),
+  ];
+
+  // Format dates as ISO strings or string
+  const createdAtStr =
+    ieltsAnswerSheet.createdAt instanceof Date
+      ? ieltsAnswerSheet.createdAt.toISOString()
+      : "";
+
+  const updatedAtStr =
+    ieltsAnswerSheet.updatedAt instanceof Date
+      ? ieltsAnswerSheet.updatedAt.toISOString()
+      : "";
+
+  // 3. Prepare answers data as array of strings in format "[response, isCorrect]"
+  // Convert each answer to string like: "[response, isCorrect]"
+  const answersColumns = ieltsAnswerSheet.answers.map((ans) => {
+    // Convert response to string, keep isCorrect as boolean
+    const responseStr =
+      typeof ans.response === "string"
+        ? `"${ans.response}"`
+        : ans.response.toString();
+    return `[${responseStr}, ${ans.isCorrect}]`;
+  });
+
+  // 4. Full data row: 5 fixed columns + 40 answers columns
+  const dataRow = [
+    ieltsAnswerSheet.type,
+    ieltsAnswerSheet.version.toString(),
+    ieltsAnswerSheet.totalScore.toString(),
+    createdAtStr,
+    updatedAtStr,
+    ...answersColumns,
+  ];
+
+  if (values.length === 0) {
+    // 5a. Sheet empty: write header + data row
+    await gapi.client.sheets.spreadsheets.values.update({
+      spreadsheetId,
+      range: `${sheetName}!A1`,
+      valueInputOption: "RAW",
+      resource: {
+        values: [headers, dataRow],
+      },
+    });
+  } else {
+    // 5b. Sheet has data: append data row only
+    await gapi.client.sheets.spreadsheets.values.append({
+      spreadsheetId,
+      range: sheetName,
+      valueInputOption: "RAW",
+      insertDataOption: "INSERT_ROWS",
+      resource: {
+        values: [dataRow],
+      },
+    });
   }
-  const ieltsAnswerSheets: ieltsAnswerSheets = {
+};
+
+
+export const writeSummarySheet = async (spreadsheetId: string, sheetName: string, createFormData: createFormData) => {
+  const summaryDataItem: ieltsAnswerSheetsList[number] = {
     title: createFormData.title,
-    createdAt: createFormData.createdAt,
+    highestVersionType: createFormData.version,
     updatedAt: createFormData.updatedAt,
     highestScore: createFormData.totalScore,
-    highestVersionType: createFormData.type,
-    items: [ieltsAnswerSheet],
+    id: sheetName,
+    thumbnail: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSfOZrqJle8FGRpv-YQP-dEMXkK1NIqXDiAog&s",
   }
+  // 1. Read existing data from the summary sheet
+  const response = await gapi.client.sheets.spreadsheets.values.get({
+    spreadsheetId,
+    range: sheetName,
+  });
 
-  // create asset link
-  // save to title sheet
+  const values = response.result.values ?? [];
 
-}
+  // 2. Define headers matching keys in summaryDataItem
+  const headers = Object.keys(summaryDataItem);
 
-export const writeSummarySheet = async () => {
-  const summaryDataItem: ieltsAnswerSheetsList[number] = {
-    title: "Sample Title",
-    highestVersionType: "exercise",
-    updatedAt: new Date(),
-    highestScore: 30,
-    id: "sample-id",
-    thumbnail: "",
+  // 3. Prepare the row data in the order of headers
+  const rowData = headers.map((key) => {
+    const val = (summaryDataItem as any)[key];
+    // Format dates to string if needed
+    if (val instanceof Date) {
+      return val.toISOString();
+    }
+    return val;
+  });
+
+  if (values.length === 0) {
+    // 4a. Sheet is empty — write headers + row
+    await gapi.client.sheets.spreadsheets.values.update({
+      spreadsheetId,
+      range: `${sheetName}!A1`,
+      valueInputOption: "RAW",
+      resource: {
+        values: [headers, rowData],
+      },
+    });
+  } else {
+    // 4b. Append only the new row (no headers)
+    await gapi.client.sheets.spreadsheets.values.append({
+      spreadsheetId,
+      range: sheetName,
+      valueInputOption: "RAW",
+      insertDataOption: "INSERT_ROWS",
+      resource: {
+        values: [rowData],
+      },
+    });
   }
-
-  
-
 }

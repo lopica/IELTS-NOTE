@@ -5,7 +5,6 @@ import {IeltsSheetCreateContext} from "../../context/ielts-sheet-create-context"
 // Provider component
 export default function IeltsSheetCreateProvider() {
   const data = useCreateSheet();
-  console.log("vao day", data)
 
   return (
     <IeltsSheetCreateContext value={data}>

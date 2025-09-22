@@ -22,7 +22,6 @@ export async function checkIfSheetExists(fileName: string): Promise<gapi.client.
       return null;
     }
   } catch (err) {
-    console.error("Error checking spreadsheet:", err);
-    return null;
+    throw err
   }
 }

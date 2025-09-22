@@ -7,6 +7,8 @@ import {
   createNewSheet,
   createNewSpreadsheet,
   hasSheetWithName,
+  writeSummarySheet,
+  writeTitleSheet,
 } from "~/lib/spreadsheet";
 import { toast } from "sonner";
 import { useState } from "react";
@@ -89,7 +91,6 @@ export default function useCreateSheet() {
     }
     
     //create new sheet
-   
     try {
       await createNewSheet(existingFile, data.title);
     } catch (error) {
@@ -101,8 +102,10 @@ export default function useCreateSheet() {
     }
     // write
     // write in the title sheet
+    await writeTitleSheet(existingFile.spreadsheetId, data.title, data)
     
-    // write in the summary sheet    
+    // write in the summary sheet   
+    await writeSummarySheet(existingFile.spreadsheetId, "summary", data)
 
 
     setIsSubmitting(false); 
