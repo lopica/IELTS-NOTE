@@ -11,3 +11,10 @@ export function formatTime(time: number) {
     useGrouping: false,
   });
 }
+
+export function formatScore(score: number): string {
+  return score % 1 === 0
+    ? `${score}.0`                      
+    : score.toFixed(1);               
+}
+

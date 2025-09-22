@@ -75,7 +75,7 @@ export default function useCreateSheet() {
     if (!existingFile) {
       existingFile = await createNewSpreadsheet(fileName);
     }
-
+    
     if (!existingFile || !existingFile.spreadsheetId) {
       setIsSubmitting(false); 
       toast.dismiss();

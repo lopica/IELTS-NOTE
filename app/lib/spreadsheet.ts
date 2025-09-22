@@ -2,6 +2,7 @@ import type { createFormData } from "hooks/useCreateSheet";
 import type { ieltsAnswerSheet } from "types/ielts-answer-sheet";
 import type { ieltsAnswerSheets } from "types/ielts-answer-sheets";
 import type { ieltsAnswerSheetsList } from "types/ielts-answer-sheets-list";
+import { checkIfSheetExists } from "./drive";
 
 export const hasSheetWithName = async (spreadsheetId: string, name: string) => {
   try {
@@ -93,6 +94,8 @@ export const createNewSpreadsheet = async (fileName: string) => {
     throw new Error("Failed to create spreadsheet");
   }
   const spreadsheetId = response.result.spreadsheetId;
+      localStorage.setItem("spreadsheetId", spreadsheetId)
+
   const sheetId = response.result.sheets?.[0].properties?.sheetId;
    await gapi.client.sheets.spreadsheets.batchUpdate({
     spreadsheetId,
@@ -206,7 +209,7 @@ export const writeTitleSheet = async (
 export const writeSummarySheet = async (spreadsheetId: string, sheetName: string, createFormData: createFormData) => {
   const summaryDataItem: ieltsAnswerSheetsList[number] = {
     title: createFormData.title,
-    highestVersionType: createFormData.version,
+    highestVersionType: createFormData.type,
     updatedAt: createFormData.updatedAt,
     highestScore: createFormData.totalScore,
     id: sheetName,
@@ -256,3 +259,44 @@ export const writeSummarySheet = async (spreadsheetId: string, sheetName: string
     });
   }
 }
+
+export const readSummary = async (
+): Promise<ieltsAnswerSheetsList> => {
+  const id = localStorage.getItem("spreadsheetId")
+  
+  const response = await gapi.client.sheets.spreadsheets.values.get({
+    spreadsheetId: localStorage.getItem("spreadsheetId") || "",
+    range: "summary",
+  });
+
+  const values = response.result.values;
+
+  if (!values || values.length < 2) {
+    // No data or only header row
+    return [];
+  }
+
+  const [headerRow, ...dataRows] = values;
+
+  // Map each row to an object based on header names
+  const result = dataRows.map((row) => {
+    const obj: any = {};
+    headerRow.forEach((key, idx) => {
+      let value = row[idx] ?? "";
+
+      // Try to coerce number fields
+
+       if (key === "updatedAt" || key === "createdAt") {
+        // Make sure it's a valid date string before converting
+        value = value ? new Date(value) : null;
+      }
+
+
+      obj[key] = value;
+    });
+
+    return obj as ieltsAnswerSheetsList[number];
+  });
+
+  return result;
+};

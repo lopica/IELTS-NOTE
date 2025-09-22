@@ -13,6 +13,13 @@ import useGoogle from "hooks/useGoogle";
 import { Toaster } from "./components/ui/sonner";
 import useWatch from "hooks/useWatch";
 import useGuard from "hooks/useGuard";
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQuery,
+} from '@tanstack/react-query'
+
+const queryClient = new QueryClient()
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -59,7 +66,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body className="bg-slate-100">
-        {children}
+        <QueryClientProvider client={queryClient}>
+          {children}
+        </QueryClientProvider>
         <Toaster />
         <ScrollRestoration />
         <Scripts />
