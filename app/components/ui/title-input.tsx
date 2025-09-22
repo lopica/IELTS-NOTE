@@ -7,13 +7,19 @@ import type { FieldErrors, Path, UseFormRegister } from "react-hook-form";
 type InputProps = {
   label: Path<createFormData>;
   required?: boolean;
+  mode?: "edit" | "view";
+  value?: string;
 };
 
 const TitleInput = ({
   label,
   required = false,
+  mode = "edit",
+  value
 }: InputProps) => {
-  const {register, errors} = useIeltsSheetCreateContext()
+  // const {register, errors} = useIeltsSheetCreateContext()
+  const context = mode === "edit" ? useIeltsSheetCreateContext() : null;
+
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleInput = () => {
@@ -22,7 +28,19 @@ const TitleInput = ({
       input.size = input.value.length || 2;
     }
   };
+  if(mode === "view") {
+    return <input
+      type="text"
+      className="border-b-2 text-4xl focus:outline-0 w-auto text-center caret-transparent border-b-slate-300"
+      ref={inputRef}
+      value={value}
+      size={value?.length ? value?.length - 1 : 2}
+      onInput={handleInput}
+    />
+  }
 
+
+  const { register, errors } = context!;
   const { ref, ...rest } = register(label, { required });
 
   return (

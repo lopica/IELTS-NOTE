@@ -2,7 +2,8 @@ import { InputOTP } from "./ui/input-otp";
 import clsx from "clsx";
 import { useIeltsSheetCreateContext } from "context/ielts-sheet-create-context";
 
-const IeltsSheet = () => {
+const IeltsSheet = ({mode = "edit"}: {mode: "view" | "edit"}) => {
+
   const {
     numberInputs,
     handleNumberKeyDown,
@@ -12,7 +13,7 @@ const IeltsSheet = () => {
     errors,
     pointTotal,
   } = useIeltsSheetCreateContext();
-
+  
   return (
     <>
       <div className="flex justify-around items-center mb-4 sm:mb-6">
@@ -51,6 +52,8 @@ const IeltsSheet = () => {
             <input
               type="text"
               className="flex-1 border border-black h-6 sm:h-8 px-2 text-xs sm:text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    disabled={mode === "view" && true}
+
             />
           </div>
         </div>
@@ -68,6 +71,7 @@ const IeltsSheet = () => {
                     key={i}
                     value={numberInputs[`candidate-${i}`] || ""}
                     onKeyDown={handleNumberKeyDown(`candidate-${i}`)}
+                    disabled={mode === "view" && true}
                   />
                 ))}
                 {/* <InputOTP maxLength={6} pattern={REGEXP_ONLY_DIGITS_AND_CHARS}>
@@ -98,6 +102,7 @@ const IeltsSheet = () => {
                     onChange={() => {}} // Prevent React warning
                     className="w-5 h-6 sm:w-6 sm:h-8 border border-black text-center text-xs sm:text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
                     style={{ caretColor: "transparent" }}
+                    disabled={mode === "view" && true}
                   />
                 ))}
               </div>
@@ -206,6 +211,8 @@ const IeltsSheet = () => {
                     }
                   )}
                   {...register(`answers.${i}.response`, { required: true })}
+                    disabled={mode === "view" && true}
+
                 />
                 <div className="col-span-3 text-center text-xs flex items-center justify-center space-x-1 px-1">
                   <label className="flex items-center cursor-pointer">
@@ -215,6 +222,8 @@ const IeltsSheet = () => {
                       onChange={() => handleMarkerChange(i + 1, "correct")}
                       className="sr-only"
                       tabIndex={-1}
+                    disabled={mode === "view" && true}
+
                     />
                     <div
                       className={`w-3 h-3 border border-gray-400 rounded-sm flex items-center justify-center text-[8px] hover:bg-gray-200 ${
@@ -233,6 +242,8 @@ const IeltsSheet = () => {
                       onChange={() => handleMarkerChange(i + 1, "incorrect")}
                       className="sr-only"
                       tabIndex={-1}
+                    disabled={mode === "view" && true}
+
                     />
                     <div
                       className={`w-3 h-3 border border-gray-400 rounded-sm flex items-center justify-center text-[8px] hover:bg-gray-200 ${
@@ -279,6 +290,8 @@ const IeltsSheet = () => {
                   {...register(`answers.${i + 20}.response`, {
                     required: true,
                   })}
+                    disabled={mode === "view" && true}
+
                 />
                 <div className="col-span-3 text-center text-xs flex items-center justify-center space-x-1 px-1">
                   <label className="flex items-center cursor-pointer">
@@ -288,6 +301,8 @@ const IeltsSheet = () => {
                       onChange={() => handleMarkerChange(i + 21, "correct")}
                       className="sr-only"
                       tabIndex={-1}
+                    disabled={mode === "view" && true}
+
                     />
                     <div
                       className={`w-3 h-3 border border-gray-400 rounded-sm flex items-center justify-center text-[8px] hover:bg-gray-200 ${
@@ -306,6 +321,8 @@ const IeltsSheet = () => {
                       onChange={() => handleMarkerChange(i + 21, "incorrect")}
                       className="sr-only"
                       tabIndex={-1}
+                    disabled={mode === "view" && true}
+
                     />
                     <div
                       className={`w-3 h-3 border border-gray-400 rounded-sm flex items-center justify-center text-[8px] hover:bg-gray-200 ${
@@ -348,6 +365,8 @@ const IeltsSheet = () => {
                   className={`w-5 h-6 sm:w-6 sm:h-8 border border-black text-center text-xs focus:outline-none bg-gray-50 pointer-events-none ${
                     i > 0 ? "-ml-px" : ""
                   }`}
+                    disabled={mode === "view" && true}
+
                 />
               ))}
             </div>

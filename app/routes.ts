@@ -13,6 +13,8 @@ export default [
     layout("./components/create-layout.tsx", [
       route("create", "routes/ielts-sheet-create.tsx"),
     ]),
-    route("list/:id", "routes/ielts-sheet-detail.tsx"),
+    layout("./components/detail-layout.tsx", [
+      route("list/:id", "routes/ielts-sheet-detail.tsx"),
+    ]),
   ]),
 ] satisfies RouteConfig;

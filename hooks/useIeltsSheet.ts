@@ -6,8 +6,8 @@ type mode = "view" | "edit" | "create";
 
 export default function useIeltsSheet(
   // type?: ieltsAnswerSheet["type"] = "exercise",
-  setValue: UseFormSetValue<createFormData>,
   mode: mode = "create",
+  setValue?: UseFormSetValue<createFormData>,
 ) {
   const [selectedMarkers, setSelectedMarkers] = useState<{
     [key: number]: string | null;
@@ -21,7 +21,7 @@ export default function useIeltsSheet(
       ...prev,
       [questionNum]: prev[questionNum] === value ? null : value,
     }));
-    setValue(`answers.${questionNum - 1}.isCorrect`, value === "correct");
+    setValue && setValue(`answers.${questionNum - 1}.isCorrect`, value === "correct");
   };
 
   const handleNumberKeyDown =

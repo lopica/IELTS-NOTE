@@ -46,7 +46,7 @@ export default function useCreateSheet() {
     selectedMarkers,
     handleMarkerChange,
     pointTotal,
-  } = useIeltsSheet(setValue);
+  } = useIeltsSheet("create", setValue);
 
   const sheetType = watch("type");
 

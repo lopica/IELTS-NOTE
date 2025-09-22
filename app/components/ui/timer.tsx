@@ -1,3 +1,4 @@
+import { TimerIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { formatTime } from "~/lib/utils";
 
@@ -17,6 +18,7 @@ export const Timer = () => {
 
   return (
     <div className="flex justify-center items-center gap-4 mb-4 text-3xl">
+      <TimerIcon />
       <span>{remainingMinute}</span>
       <span>:</span>
       <span>{remainingSecond}</span>

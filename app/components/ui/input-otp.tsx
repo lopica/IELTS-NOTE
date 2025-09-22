@@ -3,9 +3,10 @@ interface OTPInputProps {
   key: number;
   value: string;
   onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  disabled?: boolean
 }
 
-export function InputOTP({ value, onKeyDown }: OTPInputProps) {
+export function InputOTP({ value, onKeyDown, disabled = false }: OTPInputProps) {
   return (
     <input
       type="text"
@@ -15,6 +16,7 @@ export function InputOTP({ value, onKeyDown }: OTPInputProps) {
       onChange={() => {}} // change made with on key down
       className="w-5 h-6 sm:w-6 sm:h-8 border border-black text-center text-xs sm:text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
       style={{ caretColor: "transparent" }}
+      disabled={disabled}
     />
   );
 }
