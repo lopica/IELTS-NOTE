@@ -11,12 +11,6 @@ import { Button } from "~/components/ui/button";
 import type { Route } from "../+types/root";
 import { Link } from "react-router";
 
-export function meta({}: Route.MetaArgs) {
-  return [
-    { title: "IELTS NOTES" },
-    { name: "description", content: "Webapp to store ielts mock test" },
-  ];
-}
 
 export default function IeltsSheetList() {
   return (
