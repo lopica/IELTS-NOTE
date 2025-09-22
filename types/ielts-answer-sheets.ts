@@ -6,7 +6,6 @@ export type ieltsAnswerSheets = {
     updatedAt: Date,
     highestScore: number,
     highestVersionType: string,
-    asset: string,
     items: ieltsAnswerSheet[],
 }
 

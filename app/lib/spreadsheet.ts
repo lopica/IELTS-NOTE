@@ -1,3 +1,8 @@
+import type { createFormData } from "hooks/useCreateSheet";
+import type { ieltsAnswerSheet } from "types/ielts-answer-sheet";
+import type { ieltsAnswerSheets } from "types/ielts-answer-sheets";
+import type { ieltsAnswerSheetsList } from "types/ielts-answer-sheets-list";
+
 export const hasSheetWithName = async (spreadsheetId: string, name: string) => {
   try {
     const response = await gapi.client.sheets.spreadsheets.get({
@@ -84,5 +89,64 @@ export const createNewSpreadsheet = async (fileName: string) => {
       },
     },
   });
+  if (!response.result || !response.result.spreadsheetId) {
+    throw new Error("Failed to create spreadsheet");
+  }
+  const spreadsheetId = response.result.spreadsheetId;
+  const sheetId = response.result.sheets?.[0].properties?.sheetId;
+   await gapi.client.sheets.spreadsheets.batchUpdate({
+    spreadsheetId,
+    resource: {
+      requests: [
+        {
+          updateSheetProperties: {
+            properties: {
+              sheetId: sheetId,
+              title: "Summary",
+            },
+            fields: "title",
+          },
+        },
+      ],
+    },
+  });
   return response.result;
 };
+
+
+export const writeTitleSheet = async (createFormData: createFormData) => {
+  const ieltsAnswerSheet: ieltsAnswerSheet = {
+    type: createFormData.type,
+    version: createFormData.version,
+    totalScore: createFormData.totalScore,
+    createdAt: createFormData.createdAt,
+    updatedAt: createFormData.updatedAt,
+    answers: createFormData.answers,
+  }
+  const ieltsAnswerSheets: ieltsAnswerSheets = {
+    title: createFormData.title,
+    createdAt: createFormData.createdAt,
+    updatedAt: createFormData.updatedAt,
+    highestScore: createFormData.totalScore,
+    highestVersionType: createFormData.type,
+    items: [ieltsAnswerSheet],
+  }
+
+  // create asset link
+  // save to title sheet
+
+}
+
+export const writeSummarySheet = async () => {
+  const summaryDataItem: ieltsAnswerSheetsList[number] = {
+    title: "Sample Title",
+    highestVersionType: "exercise",
+    updatedAt: new Date(),
+    highestScore: 30,
+    id: "sample-id",
+    thumbnail: "",
+  }
+
+  
+
+}
