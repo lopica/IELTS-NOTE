@@ -1,30 +1,18 @@
-import React from "react";
 import { InputOTP } from "./ui/input-otp";
-import type { FieldErrors, UseFormRegister } from "react-hook-form";
-import type { createFormData } from "~/routes/ielts-sheet-create";
 import clsx from "clsx";
+import { useIeltsSheetCreateContext } from "context/ielts-sheet-create-context";
 
-interface IeltsSheetProps {
-  numberInputs: { [key: string]: string };
-  handleNumberKeyDown: (
-    fieldId: string
-  ) => (e: React.KeyboardEvent<HTMLInputElement>) => void;
-  selectedMarkers: { [key: number]: string | null };
-  handleMarkerChange: (questionNum: number, value: string) => void;
-  pointTotal: string;
-  register: UseFormRegister<createFormData>;
-  errors: FieldErrors<createFormData>;
-}
+const IeltsSheet = () => {
+  const {
+    numberInputs,
+    handleNumberKeyDown,
+    selectedMarkers,
+    handleMarkerChange,
+    register,
+    errors,
+    pointTotal,
+  } = useIeltsSheetCreateContext();
 
-const IeltsSheet = ({
-  numberInputs,
-  handleNumberKeyDown,
-  selectedMarkers,
-  handleMarkerChange,
-  pointTotal,
-  register,
-  errors,
-}: IeltsSheetProps) => {
   return (
     <>
       <div className="flex justify-around items-center mb-4 sm:mb-6">
@@ -212,7 +200,8 @@ const IeltsSheet = ({
                   className={clsx(
                     "col-span-8 border-r border-gray-300 px-1 sm:px-2 text-xs focus:outline-none bg-white border-b-2",
                     {
-                      "border-b-red-300 focus:border-b-red-500": !!errors.answers?.[i]?.response,
+                      "border-b-red-300 focus:border-b-red-500":
+                        !!errors.answers?.[i]?.response,
                       "border-b-transparent": !errors.answers?.[i]?.response,
                     }
                   )}
@@ -281,8 +270,10 @@ const IeltsSheet = ({
                   className={clsx(
                     "col-span-8 border-r border-gray-300 px-1 sm:px-2 text-xs focus:outline-none bg-white border-b-2",
                     {
-                      "border-b-red-300 focus:border-b-red-500": !!errors.answers?.[20 + i]?.response,
-                      "border-b-transparent": !errors.answers?.[20 + i]?.response,
+                      "border-b-red-300 focus:border-b-red-500":
+                        !!errors.answers?.[20 + i]?.response,
+                      "border-b-transparent":
+                        !errors.answers?.[20 + i]?.response,
                     }
                   )}
                   {...register(`answers.${i + 20}.response`, {

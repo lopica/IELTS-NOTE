@@ -1,47 +1,95 @@
+import { useForm, type SubmitHandler } from "react-hook-form";
+import type { ieltsAnswerSheet } from "types/ielts-answer-sheet";
+import type { ieltsAnswerSheets } from "types/ielts-answer-sheets";
+import useIeltsSheet from "./useIeltsSheet";
+import { checkIfSheetExists } from "~/lib/drive";
+import {
+  createNewSheet,
+  hasSheetWithName,
+  renameFirstSheet,
+} from "~/lib/spreadsheet";
+import { toast } from "sonner";
+
+export type createFormData = ieltsAnswerSheet &
+  Pick<ieltsAnswerSheets, "title">;
+
 export default function useCreateSheet() {
-     async function checkIfSheetExists(fileName: string) {
-    try {
-      const response = await gapi.client.drive.files.list({
-        q: `name='${fileName}' and mimeType='application/vnd.google-apps.spreadsheet' and trashed=false`,
-        fields: "files(id, name)",
+  const {
+    register,
+    handleSubmit,
+    control,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm<createFormData>({
+    defaultValues: {
+      title: "",
+      type: "exercise",
+      version: 1,
+      totalScore: 0,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      answers: Array.from({ length: 40 }).map(() => ({
+        response: "",
+        isCorrect: false,
+      })),
+    },
+  });
+
+  const {
+    numberInputs,
+    handleNumberKeyDown,
+    selectedMarkers,
+    handleMarkerChange,
+    pointTotal,
+  } = useIeltsSheet(setValue);
+
+  const sheetType = watch("type");
+
+  const onSubmit: SubmitHandler<createFormData> = async (data) => {
+    const fileName = "Ielts Note";
+    let existingFile = await checkIfSheetExists(fileName);
+
+    if (!existingFile) {
+      const response = await gapi.client.sheets.spreadsheets.create({
+        resource: {
+          properties: {
+            title: fileName,
+          },
+        },
       });
-
-      const files = response.result.files;
-      if (files && files.length > 0) {
-        return files[0]; // Hoặc trả về true
-      } else {
-        return null;
-      }
-    } catch (err) {
-      console.error("Error checking file:", err);
-      return null;
+      existingFile = response.result;
     }
-  }
 
-  const handleCreate = async () => {
-    const fileName = "test";
-        const existingFile = await checkIfSheetExists(fileName);
+    if (!existingFile || !existingFile.spreadsheetId) {
+      console.error("Failed to create or retrieve the spreadsheet.");
+      return;
+    }
 
-        if (existingFile) {
-          console.log("File already exists:", existingFile.id);
-          // Optional: mở file, ghi thêm, v.v.
-        } else {
-          try {
-            gapi.client.sheets.spreadsheets
-              .create({
-                properties: {
-                  title: "test",
-                },
-              })
-              .then((response: any) => {
-                // if (callback) callback(response);
-                console.log("Spreadsheet ID: " + response.result.spreadsheetId);
-              });
-          } catch (err: any) {
-            console.log(err.message)
-          }
-        }
+    if (!(await hasSheetWithName(existingFile.spreadsheetId, data.title))) {
+      //create new sheet
+      //if just the first sheet, rename it
+      renameFirstSheet(existingFile, data.title);
+    } else {
+      createNewSheet(existingFile, data.title);
+    }
+    //write
+
+
+    toast.success("Sheet created successfully!");
   };
 
-  return { handleCreate };
+  return {
+    register,
+    handleSubmit,
+    onSubmit,
+    control,
+    errors,
+    sheetType,
+    numberInputs,
+    handleNumberKeyDown,
+    selectedMarkers,
+    handleMarkerChange,
+    pointTotal,
+  };
 }

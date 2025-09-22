@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import type { UseFormSetValue } from "react-hook-form";
-import type { ieltsAnswerSheet } from "types/ielts-answer-sheet";
-import type { createFormData } from "~/routes/ielts-sheet-create";
+import type { createFormData } from "./useCreateSheet";
 
 type mode = "view" | "edit" | "create";
 
@@ -79,7 +78,7 @@ export default function useIeltsSheet(
     return correctCount.toString().padStart(2, "0");
   };
 
-  const listeningTotal = calculateListeningTotal();
+  const pointTotal = calculateListeningTotal();
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -144,6 +143,6 @@ export default function useIeltsSheet(
     handleNumberKeyDown,
     selectedMarkers,
     handleMarkerChange,
-    listeningTotal,
+    pointTotal,
   };
 }

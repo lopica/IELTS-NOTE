@@ -1,21 +1,19 @@
 import clsx from "clsx";
-import React, { useRef } from "react";
+import {  useIeltsSheetCreateContext } from "context/ielts-sheet-create-context";
+import type { createFormData } from "hooks/useCreateSheet";
+import { useRef } from "react";
 import type { FieldErrors, Path, UseFormRegister } from "react-hook-form";
-import type { createFormData } from "~/routes/ielts-sheet-create";
 
 type InputProps = {
   label: Path<createFormData>;
-  register: UseFormRegister<createFormData>;
   required?: boolean;
-  errors: FieldErrors<createFormData>;
 };
 
 const TitleInput = ({
   label,
-  register,
   required = false,
-  errors,
 }: InputProps) => {
+  const {register, errors} = useIeltsSheetCreateContext()
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleInput = () => {
