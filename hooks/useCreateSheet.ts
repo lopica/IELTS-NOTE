@@ -59,7 +59,16 @@ export default function useCreateSheet() {
     setIsSubmitting(true); 
     toast.loading("Creating sheet...");
     const fileName = "Ielts Note";
-    let existingFile = await checkIfSheetExists(fileName);
+    let existingFile
+    try {
+      existingFile = await checkIfSheetExists(fileName);
+    } catch (error) {
+      setIsSubmitting(false); 
+      toast.dismiss();
+      toast.error("Timout error when checking for existing file.");
+      navigate(`/`)
+      return;
+    }
 
     if (!existingFile) {
       existingFile = await createNewSpreadsheet(fileName);
