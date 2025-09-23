@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { UseFormSetValue } from "react-hook-form";
 import type { createFormData } from "./useCreateSheet";
+import type { ieltsAnswerSheet } from "types/ielts-answer-sheet";
 
 type mode = "view" | "edit" | "create";
 
@@ -15,6 +16,7 @@ export default function useIeltsSheet(
   const [numberInputs, setNumberInputs] = useState<{ [key: string]: string }>(
     {}
   );
+  const [versionData, setVersionData] = useState<ieltsAnswerSheet | null>(null)
 
   const handleMarkerChange = (questionNum: number, value: string) => {
     setSelectedMarkers((prev) => ({
@@ -118,6 +120,8 @@ export default function useIeltsSheet(
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, []);
 
+  const handleVersionData = (val: ieltsAnswerSheet) => setVersionData(val)
+
   useEffect(() => {
     if (mode === "create") {
       const today = new Date();
@@ -138,11 +142,30 @@ export default function useIeltsSheet(
     }
   }, []);
 
+  useEffect(()=>{
+    if(versionData && setValue && versionData?.answers) {
+      setValue("answers", versionData.answers)
+      const mappedObject: {
+    [key: number]: string | null;
+  } = {};
+
+      for (let i = 0; i < versionData.answers.length; i++) {
+        // keys from 1 to 40 (index + 1)
+        const key = i + 1;
+        mappedObject[key] = versionData.answers[i].isCorrect ? "correct" : "incorrect";
+      }
+
+      // console.log(mappedObject);
+      setSelectedMarkers(mappedObject)
+    }
+  },[versionData])
+
   return {
     numberInputs,
     handleNumberKeyDown,
     selectedMarkers,
     handleMarkerChange,
     pointTotal,
+    handleVersionData
   };
 }

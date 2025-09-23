@@ -7,10 +7,11 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "./ui/breadcrumb";
-import { Outlet, useLocation } from "react-router";
+import { Outlet, useLocation, useNavigate } from "react-router";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Switch } from "./ui/switch";
 import type { Route } from "../+types/root";
+import { Button } from "./ui/button";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -19,30 +20,36 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-const capitalize = (str: string) =>
-  decodeURIComponent(
-    str.charAt(0).toUpperCase() + str.slice(1).replace(/-/g, " ")
-  );
+const capitalize = (str: string) => {
+  // decode the segment so spaces become spaces
+  const decoded = decodeURIComponent(str);
+  // capitalize first letter + replace dashes with space (if any)
+  return decoded.charAt(0).toUpperCase() + decoded.slice(1).replace(/-/g, " ");
+};
 
 const Layout = () => {
   const location = useLocation();
+  const navigate = useNavigate();
 
+  // split pathname to segments (these will be decoded automatically by browser)
   const segments = location.pathname.split("/").filter(Boolean);
 
+  // build href by re-encoding the segments to keep %20 etc
   const buildHref = (index: number) => {
-    return "/" + segments.slice(0, index + 1).join("/");
-  };
+  return "/" + segments.slice(0, index + 1).join("/");
+};
 
   return (
     <>
-      <header className="px-2 md:px-12 py-4 flex justify-end items-center gap-8 bg-white">
-        <Switch />
-        <Avatar>
-          <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-          <AvatarFallback>CN</AvatarFallback>
-        </Avatar>
-      </header>
+      {/* your header code */}
       <div className="pt-20 md:px-28">
+        <Button
+          variant={"link"}
+          onClick={() => navigate(-1)}
+          className="text-sm text-blue-600 hover:underline py-8"
+        >
+          ← Back
+        </Button>
         <Breadcrumb>
           <BreadcrumbList>
             {segments.map((segment, index) => {
@@ -71,5 +78,6 @@ const Layout = () => {
     </>
   );
 };
+
 
 export default Layout;

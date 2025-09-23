@@ -218,7 +218,8 @@ export const writeSummarySheet = async (
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSfOZrqJle8FGRpv-YQP-dEMXkK1NIqXDiAog&s",
     totalVersion: 1,
   };
-  // 1. Read existing data from the summary sheet
+
+  // 1. Đọc dữ liệu hiện tại
   const response = await gapi.client.sheets.spreadsheets.values.get({
     spreadsheetId,
     range: sheetName,
@@ -226,42 +227,93 @@ export const writeSummarySheet = async (
 
   const values = response.result.values ?? [];
 
-  // 2. Define headers matching keys in summaryDataItem
-  const headers = Object.keys(summaryDataItem);
+  const headers = values[0] ?? Object.keys(summaryDataItem);
+  
+  // Tìm index các cột cần thiết
+  const idIndex = headers.indexOf("id");
+  const highestScoreIndex = headers.indexOf("highestScore");
+  const highestVersionTypeIndex = headers.indexOf("highestVersionType");
+  const totalVersionIndex = headers.indexOf("totalVersion");
 
-  // 3. Prepare the row data in the order of headers
-  const rowData = headers.map((key) => {
-    const val = (summaryDataItem as any)[key];
-    // Format dates to string if needed
-    if (val instanceof Date) {
-      return val.toISOString();
+  // Tìm row mà id === createFormData.title
+  const rowIndex = values.findIndex(
+    (row, i) => i > 0 && row[idIndex] === createFormData.title
+  );
+
+  if (rowIndex === -1) {
+    // Chưa tồn tại, thêm mới (kèm headers nếu sheet trống)
+    const rowData = headers.map((key) => {
+      const val = (summaryDataItem as any)[key];
+      if (val instanceof Date) return val.toISOString();
+      return val;
+    });
+
+    if (values.length === 0) {
+      // Ghi headers + dữ liệu
+      await gapi.client.sheets.spreadsheets.values.update({
+        spreadsheetId,
+        range: `${sheetName}!A1`,
+        valueInputOption: "RAW",
+        resource: {
+          values: [headers, rowData],
+        },
+      });
+    } else {
+      // Append dữ liệu mới
+      await gapi.client.sheets.spreadsheets.values.append({
+        spreadsheetId,
+        range: sheetName,
+        valueInputOption: "RAW",
+        insertDataOption: "INSERT_ROWS",
+        resource: {
+          values: [rowData],
+        },
+      });
     }
-    return val;
-  });
+  } else {
+    // Row đã tồn tại, cập nhật dữ liệu theo yêu cầu
 
-  if (values.length === 0) {
-    // 4a. Sheet is empty — write headers + row
+    // Lấy dữ liệu cũ
+    const existingRow = values[rowIndex];
+    let updatedHighestScore = existingRow[highestScoreIndex];
+    let updatedHighestVersionType = existingRow[highestVersionTypeIndex];
+    let updatedTotalVersion = existingRow[totalVersionIndex] ?? "0";
+
+    // Convert để so sánh
+    const oldScore = Number(updatedHighestScore);
+    const newScore = Number(createFormData.totalScore);
+    let totalVersionNum = Number(updatedTotalVersion);
+
+    // Cập nhật totalVersion tăng thêm 1
+    totalVersionNum++;
+
+    // Nếu điểm mới lớn hơn thì update highestScore và highestVersionType
+    if (newScore > oldScore) {
+      updatedHighestScore = newScore.toString();
+      updatedHighestVersionType = createFormData.type;
+    }
+
+    // Chuẩn bị dữ liệu cập nhật
+    const updatedRow = [...existingRow];
+    updatedRow[highestScoreIndex] = updatedHighestScore;
+    updatedRow[highestVersionTypeIndex] = updatedHighestVersionType;
+    updatedRow[totalVersionIndex] = totalVersionNum.toString();
+
+    // Cập nhật lại row trong sheet
+    // Vị trí bắt đầu là A2 (vì A1 là header), nên rowIndex = 1 tương ứng A2
+    // Cột bắt đầu từ A, nên range = `${sheetName}!A${rowIndex + 1}`
+
     await gapi.client.sheets.spreadsheets.values.update({
       spreadsheetId,
-      range: `${sheetName}!A1`,
+      range: `${sheetName}!A${rowIndex + 1}`,
       valueInputOption: "RAW",
       resource: {
-        values: [headers, rowData],
-      },
-    });
-  } else {
-    // 4b. Append only the new row (no headers)
-    await gapi.client.sheets.spreadsheets.values.append({
-      spreadsheetId,
-      range: sheetName,
-      valueInputOption: "RAW",
-      insertDataOption: "INSERT_ROWS",
-      resource: {
-        values: [rowData],
+        values: [updatedRow],
       },
     });
   }
 };
+
 
 export const readSummary = async (): Promise<ieltsAnswerSheetsList> => {
   let existingFile;
@@ -312,14 +364,18 @@ export const readSheetVersion = async (
   title: string,
   version: number
 ): Promise<ieltsAnswerSheet | null> => {
-  const spreadsheetId = localStorage.getItem("spreadsheetId") || "";
-  if (!spreadsheetId) {
-    throw new Error("Spreadsheet ID not found in localStorage");
+  let existingFile;
+  const fileName = "Ielts Note";
+
+  try {
+    existingFile = await checkIfSheetExists(fileName);
+  } catch (error) {
+    throw new Error("Timout error when checking for existing file.");
   }
 
   // Get data from the sheet with the given title
   const response = await gapi.client.sheets.spreadsheets.values.get({
-    spreadsheetId,
+    spreadsheetId: existingFile?.spreadsheetId ?? "",
     range: title, // Sheet name is the title passed in
   });
 
@@ -389,14 +445,18 @@ export const readSheetVersion = async (
 export const getMetaSheetVersion = async (
   title: string
 ): Promise<ieltsAnswerSheetsList[number] | null> => {
-  const spreadsheetId = localStorage.getItem("spreadsheetId") || "";
-  if (!spreadsheetId) {
-    throw new Error("Spreadsheet ID not found in localStorage");
+  let existingFile;
+  const fileName = "Ielts Note";
+
+  try {
+    existingFile = await checkIfSheetExists(fileName);
+  } catch (error) {
+    throw new Error("Timout error when checking for existing file.");
   }
 
   // 1. Read data from the summary sheet
   const response = await gapi.client.sheets.spreadsheets.values.get({
-    spreadsheetId,
+    spreadsheetId: existingFile?.spreadsheetId ?? "",
     range: "summary", // assuming the sheet is called "summary"
   });
 
@@ -418,9 +478,10 @@ export const getMetaSheetVersion = async (
       // Handle date fields
       if (key === "updatedAt" || key === "createdAt") {
         value = value ? new Date(value) : null;
-      } else if (key === "highestScore") {
+      } else if (key === "highestScore" || key === "totalVersion") {
         value = parseInt(value);
       }
+      
 
       rowObj[key] = value;
     });

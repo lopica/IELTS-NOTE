@@ -48,6 +48,7 @@ export default function useCreateSheet() {
     selectedMarkers,
     handleMarkerChange,
     pointTotal,
+    handleVersionData
   } = useIeltsSheet("create", setValue);
 
   const sheetType = watch("type");
@@ -100,6 +101,8 @@ export default function useCreateSheet() {
       return
 
     }
+    // check version to get the update correct
+
     // write
     // write in the title sheet
     await writeTitleSheet(existingFile.spreadsheetId, data.title, data)
@@ -126,5 +129,6 @@ export default function useCreateSheet() {
     selectedMarkers,
     handleMarkerChange,
     pointTotal,
+    handleVersionData
   };
 }

@@ -29,7 +29,7 @@ export default function IeltsSheetList() {
   return (
     <section className="mt-8 mx-8">
       <div className="flex justify-end items-center">
-        <Link to="/create">
+        <Link to="/list/create">
           <Button className=" bg-green-600 hover:bg-green-500 hover:cursor-pointer">
             New Sheet
           </Button>
@@ -41,6 +41,7 @@ export default function IeltsSheetList() {
           "Let's create the first note!"}
         {!isPending &&
           !error &&
+          Array.isArray(data) &&
           data.map((item) => (
             <Link to={item?.id} key={item?.id}>
               <Card>

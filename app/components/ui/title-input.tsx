@@ -34,7 +34,7 @@ const TitleInput = ({
         type="text"
         className="border-b-2 text-4xl focus:outline-0 w-auto text-center caret-transparent border-b-slate-300"
         ref={inputRef}
-        defaultValue={value}
+        value={value}
         size={value?.length ? value?.length - 1 : 2}
         onInput={handleInput}
       />
