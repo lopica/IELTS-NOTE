@@ -94,10 +94,10 @@ export const createNewSpreadsheet = async (fileName: string) => {
     throw new Error("Failed to create spreadsheet");
   }
   const spreadsheetId = response.result.spreadsheetId;
-      localStorage.setItem("spreadsheetId", spreadsheetId)
+  localStorage.setItem("spreadsheetId", spreadsheetId);
 
   const sheetId = response.result.sheets?.[0].properties?.sheetId;
-   await gapi.client.sheets.spreadsheets.batchUpdate({
+  await gapi.client.sheets.spreadsheets.batchUpdate({
     spreadsheetId,
     resource: {
       requests: [
@@ -115,7 +115,6 @@ export const createNewSpreadsheet = async (fileName: string) => {
   });
   return response.result;
 };
-
 
 export const writeTitleSheet = async (
   spreadsheetId: string,
@@ -205,16 +204,20 @@ export const writeTitleSheet = async (
   }
 };
 
-
-export const writeSummarySheet = async (spreadsheetId: string, sheetName: string, createFormData: createFormData) => {
+export const writeSummarySheet = async (
+  spreadsheetId: string,
+  sheetName: string,
+  createFormData: createFormData
+) => {
   const summaryDataItem: ieltsAnswerSheetsList[number] = {
-    title: createFormData.title,
+    id: createFormData.title,
     highestVersionType: createFormData.type,
     updatedAt: createFormData.updatedAt,
     highestScore: createFormData.totalScore,
-    id: sheetName,
-    thumbnail: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSfOZrqJle8FGRpv-YQP-dEMXkK1NIqXDiAog&s",
-  }
+    thumbnail:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSfOZrqJle8FGRpv-YQP-dEMXkK1NIqXDiAog&s",
+    totalVersion: 1,
+  };
   // 1. Read existing data from the summary sheet
   const response = await gapi.client.sheets.spreadsheets.values.get({
     spreadsheetId,
@@ -258,14 +261,19 @@ export const writeSummarySheet = async (spreadsheetId: string, sheetName: string
       },
     });
   }
-}
+};
 
-export const readSummary = async (
-): Promise<ieltsAnswerSheetsList> => {
-  const id = localStorage.getItem("spreadsheetId")
-  
+export const readSummary = async (): Promise<ieltsAnswerSheetsList> => {
+  let existingFile;
+  const fileName = "Ielts Note";
+
+  try {
+    existingFile = await checkIfSheetExists(fileName);
+  } catch (error) {
+    throw new Error("Timout error when checking for existing file.");
+  }
   const response = await gapi.client.sheets.spreadsheets.values.get({
-    spreadsheetId: localStorage.getItem("spreadsheetId") || "",
+    spreadsheetId: existingFile?.spreadsheetId ?? "",
     range: "summary",
   });
 
@@ -286,11 +294,10 @@ export const readSummary = async (
 
       // Try to coerce number fields
 
-       if (key === "updatedAt" || key === "createdAt") {
+      if (key === "updatedAt" || key === "createdAt") {
         // Make sure it's a valid date string before converting
         value = value ? new Date(value) : null;
       }
-
 
       obj[key] = value;
     });
@@ -299,4 +306,129 @@ export const readSummary = async (
   });
 
   return result;
+};
+
+export const readSheetVersion = async (
+  title: string,
+  version: number
+): Promise<ieltsAnswerSheet | null> => {
+  const spreadsheetId = localStorage.getItem("spreadsheetId") || "";
+  if (!spreadsheetId) {
+    throw new Error("Spreadsheet ID not found in localStorage");
+  }
+
+  // Get data from the sheet with the given title
+  const response = await gapi.client.sheets.spreadsheets.values.get({
+    spreadsheetId,
+    range: title, // Sheet name is the title passed in
+  });
+
+  const values = response.result.values;
+  if (!values || values.length < 2) {
+    // No data or only headers
+    return null;
+  }
+
+  const [headerRow, ...dataRows] = values;
+
+  // Find the row that matches the version
+  const versionIdx = headerRow.indexOf("version");
+  if (versionIdx === -1) {
+    throw new Error("Sheet does not contain a 'version' column");
+  }
+
+  // Build ieltsAnswerSheet object from the row
+  for (const row of dataRows) {
+    if (parseInt(row[versionIdx]) === version) {
+      const obj: any = {};
+      headerRow.forEach((key, idx) => {
+        let value = row[idx] ?? "";
+
+        if (key === "createdAt" || key === "updatedAt") {
+          value = value ? new Date(value) : null;
+        } else if (key === "totalScore" || key === "version") {
+          value = parseInt(value);
+        }
+
+        obj[key] = value;
+      });
+
+      // Extract answers (columns after the first 5 fixed ones)
+      const answers = headerRow
+        .slice(5) // after type, version, totalScore, createdAt, updatedAt
+        .map((_, idx) => {
+          const raw = row[5 + idx];
+          if (!raw) return { response: "", isCorrect: false };
+
+          try {
+            // Expecting format like [response, true]
+            const parsed = JSON.parse(raw.replace(/'/g, '"'));
+            return {
+              response: parsed[0],
+              isCorrect: parsed[1],
+            };
+          } catch {
+            return { response: "", isCorrect: false };
+          }
+        });
+
+      return {
+        type: obj.type,
+        version: obj.version,
+        totalScore: obj.totalScore,
+        createdAt: obj.createdAt,
+        updatedAt: obj.updatedAt,
+        answers,
+      } as ieltsAnswerSheet;
+    }
+  }
+
+  return null; // No matching version found
+};
+
+export const getMetaSheetVersion = async (
+  title: string
+): Promise<ieltsAnswerSheetsList[number] | null> => {
+  const spreadsheetId = localStorage.getItem("spreadsheetId") || "";
+  if (!spreadsheetId) {
+    throw new Error("Spreadsheet ID not found in localStorage");
+  }
+
+  // 1. Read data from the summary sheet
+  const response = await gapi.client.sheets.spreadsheets.values.get({
+    spreadsheetId,
+    range: "summary", // assuming the sheet is called "summary"
+  });
+
+  const values = response.result.values;
+  if (!values || values.length < 2) {
+    // no data or only header row
+    return null;
+  }
+
+  // 2. Extract header row and data rows
+  const [headerRow, ...dataRows] = values;
+
+  // 3. Find the row that matches the title
+  for (const row of dataRows) {
+    const rowObj: any = {};
+    headerRow.forEach((key, idx) => {
+      let value = row[idx] ?? "";
+
+      // Handle date fields
+      if (key === "updatedAt" || key === "createdAt") {
+        value = value ? new Date(value) : null;
+      } else if (key === "highestScore") {
+        value = parseInt(value);
+      }
+
+      rowObj[key] = value;
+    });
+
+    if (rowObj.id === title) {
+      return rowObj as ieltsAnswerSheetsList[number];
+    }
+  }
+
+  return null; // no matching row found
 };

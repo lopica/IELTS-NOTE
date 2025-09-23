@@ -23,11 +23,8 @@ export default function IeltsSheetList() {
   });
 
   if (error) {
-    toast.error("An error has occurred: ");
     console.error(error);
-    return;
   }
-
 
   return (
     <section className="mt-8 mx-8">
@@ -38,23 +35,22 @@ export default function IeltsSheetList() {
           </Button>
         </Link>
       </div>
-      <div className="grid grid-cols-4 gap-12">
+      <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-12 my-8">
         {isPending && "loading..."}
-        {!isPending &&
-          !error &&
-          data.length === 0 && "Let's create the first note!"}
+        {((!isPending && !error && data.length === 0) || error) &&
+          "Let's create the first note!"}
         {!isPending &&
           !error &&
           data.map((item) => (
-            <Link to={item.title}>
+            <Link to={item?.id} key={item?.id}>
               <Card>
                 <CardHeader>
-                  <CardTitle>{item.title}</CardTitle>
+                  <CardTitle>{item.id}</CardTitle>
                   <CardDescription>{item.highestVersionType}</CardDescription>
                   <CardAction>{formatScore(item.highestScore)}</CardAction>
                 </CardHeader>
                 <CardContent>
-                  <img src={item.thumbnail} />
+                  <img src={item.thumbnail} alt="thubnail" />
                 </CardContent>
                 <CardFooter>
                   <p>{item.updatedAt.toLocaleDateString("vi-VN")}</p>

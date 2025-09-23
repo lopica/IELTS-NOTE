@@ -20,14 +20,14 @@ export function meta({}: Route.MetaArgs) {
 }
 
 const capitalize = (str: string) =>
-  decodeURIComponent(str.charAt(0).toUpperCase() + str.slice(1).replace(/-/g, " "));
+  decodeURIComponent(
+    str.charAt(0).toUpperCase() + str.slice(1).replace(/-/g, " ")
+  );
 
 const Layout = () => {
   const location = useLocation();
 
-  const segments = location.pathname
-    .split("/")
-    .filter(Boolean); 
+  const segments = location.pathname.split("/").filter(Boolean);
 
   const buildHref = (index: number) => {
     return "/" + segments.slice(0, index + 1).join("/");
@@ -35,14 +35,14 @@ const Layout = () => {
 
   return (
     <>
-      <header className="px-12 py-4 flex justify-end items-center gap-8 bg-white">
+      <header className="px-2 md:px-12 py-4 flex justify-end items-center gap-8 bg-white">
         <Switch />
         <Avatar>
           <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
           <AvatarFallback>CN</AvatarFallback>
         </Avatar>
       </header>
-      <div className="pt-20 px-28">
+      <div className="pt-20 md:px-28">
         <Breadcrumb>
           <BreadcrumbList>
             {segments.map((segment, index) => {

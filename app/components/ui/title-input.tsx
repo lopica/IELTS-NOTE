@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import {  useIeltsSheetCreateContext } from "context/ielts-sheet-create-context";
+import { useIeltsSheetCreateContext } from "context/ielts-sheet-create-context";
 import type { createFormData } from "hooks/useCreateSheet";
 import { useRef } from "react";
 import type { FieldErrors, Path, UseFormRegister } from "react-hook-form";
@@ -15,7 +15,7 @@ const TitleInput = ({
   label,
   required = false,
   mode = "edit",
-  value
+  value,
 }: InputProps) => {
   // const {register, errors} = useIeltsSheetCreateContext()
   const context = mode === "edit" ? useIeltsSheetCreateContext() : null;
@@ -28,17 +28,18 @@ const TitleInput = ({
       input.size = input.value.length || 2;
     }
   };
-  if(mode === "view") {
-    return <input
-      type="text"
-      className="border-b-2 text-4xl focus:outline-0 w-auto text-center caret-transparent border-b-slate-300"
-      ref={inputRef}
-      value={value}
-      size={value?.length ? value?.length - 1 : 2}
-      onInput={handleInput}
-    />
+  if (mode === "view") {
+    return (
+      <input
+        type="text"
+        className="border-b-2 text-4xl focus:outline-0 w-auto text-center caret-transparent border-b-slate-300"
+        ref={inputRef}
+        defaultValue={value}
+        size={value?.length ? value?.length - 1 : 2}
+        onInput={handleInput}
+      />
+    );
   }
-
 
   const { register, errors } = context!;
   const { ref, ...rest } = register(label, { required });
@@ -51,7 +52,8 @@ const TitleInput = ({
       className={clsx(
         "border-b-2 text-4xl focus:outline-0 w-auto text-center caret-transparent",
         {
-          "border-b-red-300 focus:border-b-red-500 !border-b-[3px]": !!errors.title,
+          "border-b-red-300 focus:border-b-red-500 !border-b-[3px]":
+            !!errors.title,
           "border-b-slate-300 focus:border-b-slate-500": !errors.title,
         }
       )}

@@ -2,8 +2,7 @@ import { InputOTP } from "./ui/input-otp";
 import clsx from "clsx";
 import { useIeltsSheetCreateContext } from "context/ielts-sheet-create-context";
 
-const IeltsSheet = ({mode = "edit"}: {mode?: "view" | "edit"}) => {
-
+const IeltsSheet = ({ mode = "edit" }: { mode?: "view" | "edit" }) => {
   const {
     numberInputs,
     handleNumberKeyDown,
@@ -13,7 +12,7 @@ const IeltsSheet = ({mode = "edit"}: {mode?: "view" | "edit"}) => {
     errors,
     pointTotal,
   } = useIeltsSheetCreateContext();
-  
+
   return (
     <>
       <div className="flex justify-around items-center mb-4 sm:mb-6">
@@ -52,16 +51,15 @@ const IeltsSheet = ({mode = "edit"}: {mode?: "view" | "edit"}) => {
             <input
               type="text"
               className="flex-1 border border-black h-6 sm:h-8 px-2 text-xs sm:text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    disabled={mode === "view" && true}
-
+              disabled={mode === "view" && true}
             />
           </div>
         </div>
 
         <div className="mb-4">
-          <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
+          <div className="flex flex-col md:flex-row md:items-center space-y-3 md:space-y-0 md:space-x-4">
             <div className="flex items-center space-x-2 sm:space-x-4">
-              <div className="w-14 sm:w-16 text-xs text-right leading-tight">
+              <div className="w-14 md:w-16 text-xs text-right leading-tight">
                 <div>Candidate</div>
                 <div>No.</div>
               </div>
@@ -86,8 +84,8 @@ const IeltsSheet = ({mode = "edit"}: {mode?: "view" | "edit"}) => {
                 </InputOTP> */}
               </div>
             </div>
-            <div className="flex items-center space-x-2 sm:space-x-2">
-              <div className="w-14 sm:w-16 text-xs text-right leading-tight">
+            <div className="flex items-center space-x-2 md:space-x-2">
+              <div className="w-14 md:w-16 text-xs text-right leading-tight">
                 <div>Centre</div>
                 <div>No.</div>
               </div>
@@ -100,7 +98,7 @@ const IeltsSheet = ({mode = "edit"}: {mode?: "view" | "edit"}) => {
                     value={numberInputs[`centre-${i}`] || ""}
                     onKeyDown={handleNumberKeyDown(`centre-${i}`)}
                     onChange={() => {}} // Prevent React warning
-                    className="w-5 h-6 sm:w-6 sm:h-8 border border-black text-center text-xs sm:text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="w-5 h-6 md:w-6 md:h-8 border border-black text-center text-xs md:text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
                     style={{ caretColor: "transparent" }}
                     disabled={mode === "view" && true}
                   />
@@ -111,8 +109,8 @@ const IeltsSheet = ({mode = "edit"}: {mode?: "view" | "edit"}) => {
         </div>
 
         <div className="flex justify-end">
-          <div className="flex items-center space-x-4">
-            <span className="text-xs">Test Date</span>
+          <div className="flex flex-col sm:flex-row items-center space-x-4 space-y-4">
+            <span className="hidden md:block text-xs">Test Date</span>
             <div className="flex items-end space-x-2">
               <span className="text-xs mb-1">Day</span>
               <div className="flex space-x-1">
@@ -178,7 +176,7 @@ const IeltsSheet = ({mode = "edit"}: {mode?: "view" | "edit"}) => {
           <div className="flex justify-between items-center gap-2 sm:gap-4 mx-4 sm:mx-16">
             {Array.from({ length: 7 }).map((_, i) => (
               <div key={i} className="text-center text-xs">
-                Listening
+                IELTS
               </div>
             ))}
           </div>
@@ -211,8 +209,7 @@ const IeltsSheet = ({mode = "edit"}: {mode?: "view" | "edit"}) => {
                     }
                   )}
                   {...register(`answers.${i}.response`, { required: true })}
-                    disabled={mode === "view" && true}
-
+                  disabled={mode === "view" && true}
                 />
                 <div className="col-span-3 text-center text-xs flex items-center justify-center space-x-1 px-1">
                   <label className="flex items-center cursor-pointer">
@@ -222,8 +219,7 @@ const IeltsSheet = ({mode = "edit"}: {mode?: "view" | "edit"}) => {
                       onChange={() => handleMarkerChange(i + 1, "correct")}
                       className="sr-only"
                       tabIndex={-1}
-                    disabled={mode === "view" && true}
-
+                      disabled={mode === "view" && true}
                     />
                     <div
                       className={`w-3 h-3 border border-gray-400 rounded-sm flex items-center justify-center text-[8px] hover:bg-gray-200 ${
@@ -242,8 +238,7 @@ const IeltsSheet = ({mode = "edit"}: {mode?: "view" | "edit"}) => {
                       onChange={() => handleMarkerChange(i + 1, "incorrect")}
                       className="sr-only"
                       tabIndex={-1}
-                    disabled={mode === "view" && true}
-
+                      disabled={mode === "view" && true}
                     />
                     <div
                       className={`w-3 h-3 border border-gray-400 rounded-sm flex items-center justify-center text-[8px] hover:bg-gray-200 ${
@@ -290,8 +285,7 @@ const IeltsSheet = ({mode = "edit"}: {mode?: "view" | "edit"}) => {
                   {...register(`answers.${i + 20}.response`, {
                     required: true,
                   })}
-                    disabled={mode === "view" && true}
-
+                  disabled={mode === "view" && true}
                 />
                 <div className="col-span-3 text-center text-xs flex items-center justify-center space-x-1 px-1">
                   <label className="flex items-center cursor-pointer">
@@ -301,8 +295,7 @@ const IeltsSheet = ({mode = "edit"}: {mode?: "view" | "edit"}) => {
                       onChange={() => handleMarkerChange(i + 21, "correct")}
                       className="sr-only"
                       tabIndex={-1}
-                    disabled={mode === "view" && true}
-
+                      disabled={mode === "view" && true}
                     />
                     <div
                       className={`w-3 h-3 border border-gray-400 rounded-sm flex items-center justify-center text-[8px] hover:bg-gray-200 ${
@@ -321,8 +314,7 @@ const IeltsSheet = ({mode = "edit"}: {mode?: "view" | "edit"}) => {
                       onChange={() => handleMarkerChange(i + 21, "incorrect")}
                       className="sr-only"
                       tabIndex={-1}
-                    disabled={mode === "view" && true}
-
+                      disabled={mode === "view" && true}
                     />
                     <div
                       className={`w-3 h-3 border border-gray-400 rounded-sm flex items-center justify-center text-[8px] hover:bg-gray-200 ${
@@ -342,7 +334,7 @@ const IeltsSheet = ({mode = "edit"}: {mode?: "view" | "edit"}) => {
       </div>
 
       <div className="border-2 border-black border-t-0">
-        <div className="px-2 py-1 flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 text-xs">
+        <div className="px-2 py-1 flex flex-col md:flex-row md:items-center space-y-2 md:space-y-0 md:space-x-4 text-xs">
           <div className="flex items-center space-x-2 flex-1">
             <span className="whitespace-nowrap">Marker 2 Signature:</span>
             <div className="flex-1 border border-black h-5 sm:h-6 px-1 sm:px-2 text-xs bg-gray-50"></div>
@@ -365,8 +357,7 @@ const IeltsSheet = ({mode = "edit"}: {mode?: "view" | "edit"}) => {
                   className={`w-5 h-6 sm:w-6 sm:h-8 border border-black text-center text-xs focus:outline-none bg-gray-50 pointer-events-none ${
                     i > 0 ? "-ml-px" : ""
                   }`}
-                    disabled={mode === "view" && true}
-
+                  disabled={mode === "view" && true}
                 />
               ))}
             </div>
@@ -375,23 +366,23 @@ const IeltsSheet = ({mode = "edit"}: {mode?: "view" | "edit"}) => {
       </div>
 
       {/* Footer with QR code */}
-      <div className="flex justify-between items-center mt-4 sm:mt-6">
-        <div className="w-2 h-2 sm:w-4 sm:h-4 bg-gray-800"></div>
-        <div className="w-12 h-12 sm:w-16 sm:h-16 border-2 border-black flex items-center justify-center">
-          <div className="w-8 h-8 sm:w-12 sm:h-12 bg-black"></div>
+      <div className="flex justify-between items-center mt-4 sm:mt-6 flex-wrap">
+        <div className="w-2 h-2 xl:w-4 xl:h-4 bg-gray-800"></div>
+        <div className="w-12 h-12 xl:w-16 xl:h-16 border-2 border-black flex items-center justify-center">
+          <div className="w-8 h-8 xl:w-12 xl:h-12 bg-black"></div>
         </div>
-        <div className="flex space-x-2 sm:space-x-4">
-          <div className="w-12 h-3 sm:w-20 sm:h-4 bg-gray-200"></div>
-          <div className="w-12 h-3 sm:w-20 sm:h-4 bg-gray-300"></div>
-          <div className="w-12 h-3 sm:w-20 sm:h-4 bg-gray-500"></div>
-          <div className="w-12 h-3 sm:w-20 sm:h-4 bg-gray-600"></div>
-          <div className="w-12 h-3 sm:w-20 sm:h-4 bg-gray-800"></div>
+        <div className="flex space-x-2 xl:space-x-4 flex-wrap">
+          <div className="w-12 h-3 xl:w-20 xl:h-4 bg-gray-200"></div>
+          <div className="w-12 h-3 xl:w-20 xl:h-4 bg-gray-300"></div>
+          <div className="w-12 h-3 xl:w-20 xl:h-4 bg-gray-500"></div>
+          <div className="w-12 h-3 xl:w-20 xl:h-4 bg-gray-600"></div>
+          <div className="w-12 h-3 xl:w-20 xl:h-4 bg-gray-800"></div>
         </div>
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center flex-wrap">
           <div className="text-xs mb-1">20058</div>
-          <div className="w-6 h-6 sm:w-8 sm:h-8 border border-black"></div>
+          <div className="w-6 h-6 xl:w-8 xl:h-8 border border-black"></div>
         </div>
-        <div className="w-2 h-2 sm:w-4 sm:h-4 bg-gray-800"></div>
+        <div className="w-2 h-2 xl:w-4 xl:h-4 bg-gray-800"></div>
       </div>
     </>
   );

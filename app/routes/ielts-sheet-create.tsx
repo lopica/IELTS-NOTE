@@ -51,7 +51,7 @@ const IeltsSheetCreate = () => {
       <div className="max-w-4xl mx-auto p-4 sm:p-6 bg-white">
         <IeltsSheet />
       </div>
-      <div className="mt-4 mr-56 flex justify-end">
+      <div className="mt-4 flex justify-end">
         <Button>Save</Button>
       </div>
     </form>
