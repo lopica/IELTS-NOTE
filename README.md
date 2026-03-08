@@ -1,87 +1,79 @@
-# Welcome to React Router!
+# IELTS Note
 
-A modern, production-ready template for building full-stack React applications using React Router.
+Web app quản lý và lưu trữ bài làm IELTS mock test, tích hợp Google Drive/Sheets.
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/remix-run/react-router-templates/tree/main/default)
+## Tính năng
 
-## Features
+- 🏠 **Trang chủ** — Giới thiệu và đăng nhập Google
+- 📋 **Danh sách answer sheet** — Xem tất cả bài làm IELTS
+- ✏️ **Tạo bài làm mới** — Tạo và điền answer sheet
+- 📄 **Chi tiết bài làm** — Xem chi tiết từng bài theo ID
+- 🔐 **Đăng nhập Google** — Dùng Google Sign-In và đồng bộ với Drive/Sheets
+- ⏱️ **Timer** — Hỗ trợ canh giờ làm bài
+- 🎨 **Tailwind CSS** — Giao diện responsive
 
-- 🚀 Server-side rendering
-- ⚡️ Hot Module Replacement (HMR)
-- 📦 Asset bundling and optimization
-- 🔄 Data loading and mutations
-- 🔒 TypeScript by default
-- 🎉 TailwindCSS for styling
-- 📖 [React Router docs](https://reactrouter.com/)
+## Công nghệ
 
-## Getting Started
+- **React 19** + **React Router 7**
+- **TypeScript**
+- **Tailwind CSS**
+- **Zustand** (state), **TanStack Query**, **React Hook Form**, **Zod**
+- **Google APIs** (Drive, Sheets) — GAPI, GSI
+- **Radix UI**, **Lucide Icons**, **Sonner**
 
-### Installation
+## Yêu cầu
 
-Install the dependencies:
+- Node.js (khuyến nghị phiên bản LTS)
+- Tài khoản Google (cho đăng nhập và lưu trữ)
+
+## Cài đặt
 
 ```bash
 npm install
 ```
 
-### Development
-
-Start the development server with HMR:
+## Chạy development
 
 ```bash
 npm run dev
 ```
 
-Your application will be available at `http://localhost:5173`.
+Ứng dụng chạy tại `http://localhost:5173`.
 
-## Building for Production
-
-Create a production build:
+## Build production
 
 ```bash
 npm run build
 ```
 
-## Deployment
-
-### Docker Deployment
-
-To build and run using Docker:
+## Chạy production (sau khi build)
 
 ```bash
-docker build -t my-app .
-
-# Run the container
-docker run -p 3000:3000 my-app
+npm start
 ```
 
-The containerized application can be deployed to any platform that supports Docker, including:
+## Kiểm tra type
 
-- AWS ECS
-- Google Cloud Run
-- Azure Container Apps
-- Digital Ocean App Platform
-- Fly.io
-- Railway
-
-### DIY Deployment
-
-If you're familiar with deploying Node applications, the built-in app server is production-ready.
-
-Make sure to deploy the output of `npm run build`
-
-```
-├── package.json
-├── package-lock.json (or pnpm-lock.yaml, or bun.lockb)
-├── build/
-│   ├── client/    # Static assets
-│   └── server/    # Server-side code
+```bash
+npm run typecheck
 ```
 
-## Styling
+## Cấu trúc routes
 
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
+- `/` — Trang chủ (landing)
+- `/list` — Danh sách IELTS sheets
+- `/list/create` — Tạo sheet mới
+- `/list/:id` — Chi tiết sheet theo ID
+
+## Docker
+
+Build và chạy bằng Docker:
+
+```bash
+docker build -t ielts-note .
+docker run -p 3000:3000 ielts-note
+```
 
 ---
 
-Built with ❤️ using React Router.
+Built with React Router & TypeScript.
